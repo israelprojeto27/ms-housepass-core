@@ -42,7 +42,7 @@ public class ConquerService {
 		
 		userRepository.save(user);
 		
-		return new ResponseEntity<>("Conquista do usuário foi adicionada com sucesso", HttpStatus.CREATED);
+		return new ResponseEntity<>("Conquista do usuário foi adicionada com sucesso2", HttpStatus.CREATED);
 	}
 
 	public ResponseEntity<?> findAll() {
