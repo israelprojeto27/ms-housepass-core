@@ -20,16 +20,16 @@ public class OfertaDTO {
 	private String username;
 	private String userImageUrl;
 	private Double valorOferta;
-	private LocalDateTime dataOferta;
+	private LocalDateTime createdData;
 	
 	public static OfertaDTO fromEntity(Oferta oferta) {
 		return OfertaDTO.builder()
 				.id(oferta.getId())
 				.userId(oferta.getUserOferta().getUserId())
-				.username(oferta.getUserOferta().getUsername())
-				.userImageUrl(oferta.getUserOferta().getUserImageUrl())
+				.username(oferta.getUserOferta().getUserName())
+				.userImageUrl(oferta.getUserOferta().getImageUrl())
 				.valorOferta(oferta.getValor())
-				.dataOferta(oferta.getData())
+				.createdData(oferta.getCreatedDate())
 				.build();
 	}
 

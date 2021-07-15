@@ -2,7 +2,9 @@ package com.housepass.user.app.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,6 +34,18 @@ public class EvaluationController {
 	@GetMapping
 	public ResponseEntity<?> findAll() {
 		return service.findAll();		
+	}
+	
+	@ApiOperation(value = "Deleta uma avaliação por Id")
+	@DeleteMapping("/{evaluationId}")
+	public ResponseEntity<?> delete(@PathVariable String evaluationId) {
+		return service.deleteById(evaluationId);		
+	}
+	
+	@ApiOperation(value = "Busca avaliação por Id")
+	@GetMapping("/{evaluationId}")
+	public ResponseEntity<?> findById(@PathVariable String evaluationId) {
+		return service.findById(evaluationId);		
 	}
 	
 	

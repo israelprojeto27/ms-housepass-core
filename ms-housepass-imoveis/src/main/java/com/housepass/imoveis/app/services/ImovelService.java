@@ -11,12 +11,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.housepass.imoveis.app.dtos.CreateImovelDTO;
+import com.housepass.imoveis.app.dtos.CreateUserResumeImovellDTO;
 import com.housepass.imoveis.app.dtos.ImovelDTO;
 import com.housepass.imoveis.app.dtos.UpdateImovelDTO;
 import com.housepass.imoveis.app.dtos.UserOwnerDTO;
 import com.housepass.imoveis.app.entities.Imovel;
 import com.housepass.imoveis.app.entities.User;
+import com.housepass.imoveis.app.entities.UserResume;
 import com.housepass.imoveis.app.repositories.ImovelRepository;
+import com.housepass.imoveis.app.repositories.UserResumeRepository;
+import com.housepass.imoveis.app.exceptions.DataNotFoundException;
 import com.housepass.imoveis.app.feignclients.UserClient;
 
 
@@ -28,26 +32,27 @@ public class ImovelService {
 	 
 	@Autowired
 	UserClient userClient;
-
+	
 	@Transactional
-	public void create(CreateImovelDTO dto) {
+	public ResponseEntity<?> create(CreateImovelDTO dto) {
 		Imovel imovel = CreateImovelDTO.toEntity(dto);
 		UserOwnerDTO userOwnerDTO = userClient.findByIdOwner(dto.getUserId()).getBody();
 		User user = UserOwnerDTO.toEntity(userOwnerDTO);
 		imovel.setUserOwner(user);
 		repository.insert(imovel);
+		return new ResponseEntity<>("Imovel criado com sucesso", HttpStatus.CREATED);
 	}
 
-	public List<ImovelDTO> findAll() {
-		List<Imovel> list = repository.findAll();
-		return list.stream()
-				.map(imovel -> ImovelDTO.fromEntity(imovel))
-				.collect(Collectors.toList());
+	public ResponseEntity<?> findAll() {		
+		return new ResponseEntity<>(repository.findAll().stream()
+														.map(ImovelDTO::fromEntity)
+														.collect(Collectors.toList()), 
+									HttpStatus.OK);
 	}
 
-	public ImovelDTO findById(String imovelId) {
-		Optional<Imovel> imoveleOpt = repository.findById(imovelId);
-		return ImovelDTO.fromEntity(imoveleOpt.get());
+	public ResponseEntity<?> findById(String imovelId) {
+		Imovel imovel = repository.findById(imovelId).orElseThrow(() -> new DataNotFoundException("Imovel não encontrado"));
+		return new ResponseEntity<>(ImovelDTO.fromEntity(imovel), HttpStatus.OK);
 	}
 	
 	public ResponseEntity<?> update(String imovelId, UpdateImovelDTO dto) {
@@ -68,5 +73,6 @@ public class ImovelService {
 		
 		return new ResponseEntity<>("Imovel atualizado com sucesso", HttpStatus.NO_CONTENT);
 	}
+
 
 }

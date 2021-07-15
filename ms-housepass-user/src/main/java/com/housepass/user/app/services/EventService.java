@@ -40,7 +40,7 @@ public class EventService {
 	@Transactional
 	public ResponseEntity<?> create(CreateEventDTO dto) {
 		Event event = CreateEventDTO.toEntity(dto);
-		UserResume userResume = loadUserResume(dto.getUserCreateEventId());
+		UserResume userResume = userResumeRepository.findByUserId( dto.getUserCreateEventId());
 		event.setUserCreateEvent(userResume);
 		repository.insert(event);
 		
@@ -56,17 +56,6 @@ public class EventService {
 		return new ResponseEntity<>("Evento foi criado com sucesso", HttpStatus.CREATED);
 	}
 	
-	private UserResume loadUserResume(String userId) {
-		UserResume userResume = userResumeRepository.findByUserId(userId); // usuario que enviou o convite
-		if ( userResume == null ) {
-			User user = userRepository.findById(userId).get(); // usuario que recebeu o convite
-			userResume = UserResume.fromEntity(user);			
-			userResumeRepository.insert(userResume);
-			return userResume;
-		}
-		return userResume;
-	}
-
 	public ResponseEntity<?> findAll() {		 
 		return new ResponseEntity<>(repository.findAll().stream()
 													    .map(EventDTO::fromEntity)
@@ -80,11 +69,8 @@ public class EventService {
 		Event event = repository.findById(eventId).orElseThrow(() -> new DataNotFoundException("Evento não encontrado"));
 		User user = userRepository.findById(event.getUserCreateEvent().getUserId()).orElseThrow(() -> new DataNotFoundException("Usuario não encontrado ou já deletado"));
 		
-		if ( ! user.getEvents().isEmpty()) {
-			user.getEvents().remove(event);
-			userRepository.save(user);
-		}
-		
+		user.getEvents().remove(event);
+		userRepository.save(user);		
 		repository.delete(event);
 		
 		return new ResponseEntity<>("Evento foi removido com sucesso", HttpStatus.NO_CONTENT);
@@ -111,6 +97,6 @@ public class EventService {
 		repository.save(event);
 		
 		return new ResponseEntity<>("Evento atualizado com sucesso", HttpStatus.NO_CONTENT);
-	}
+	} 
 
 }

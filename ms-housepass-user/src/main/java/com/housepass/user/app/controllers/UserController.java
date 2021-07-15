@@ -3,6 +3,7 @@ package com.housepass.user.app.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,8 +35,7 @@ public class UserController {
 	@ApiOperation(value = "Criação de novo usuário")
 	@PostMapping
 	public ResponseEntity<?> create(@RequestBody CreateUserDTO dto) {
-		service.create(dto);		
-		return new ResponseEntity<>("Usuário criado com sucesso", HttpStatus.CREATED);
+		return service.create(dto);
 	}
 	
 	
@@ -96,6 +96,13 @@ public class UserController {
 											  @PathVariable String  imovelId,
 									  	      @RequestBody UpdateImovelUserDTO dto) {		
 		return service.updateImovelUser(userId, imovelId, dto);
+	}
+	
+	
+	@ApiOperation(value = "Delete usuario por Id")
+	@DeleteMapping("/{userId}")
+	public ResponseEntity<?> delete(@PathVariable String  userId) {		
+		return service.delete(userId);
 	}
 	
 	

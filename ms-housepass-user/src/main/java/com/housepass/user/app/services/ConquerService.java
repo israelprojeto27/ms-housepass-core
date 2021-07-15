@@ -14,6 +14,7 @@ import com.housepass.user.app.dtos.ConquerDTO;
 import com.housepass.user.app.dtos.CreateConquerUserDTO;
 import com.housepass.user.app.entities.Conquer;
 import com.housepass.user.app.entities.User;
+import com.housepass.user.app.exceptions.DataNotFoundException;
 import com.housepass.user.app.repositories.ConquerRepository;
 import com.housepass.user.app.repositories.UserRepository;
 
@@ -45,13 +46,24 @@ public class ConquerService {
 		return new ResponseEntity<>("Conquista do usuário foi adicionada com sucesso", HttpStatus.CREATED);
 	}
 
-	public ResponseEntity<?> findAll() {
-		List<Conquer> list = repository.findAll();
-		return new ResponseEntity<>(list.stream()
-										.map(ConquerDTO::fromEntity)
-										.collect(Collectors.toList()),				
-									HttpStatus.OK);
-		
+	public ResponseEntity<?> findAll() {		
+		return new ResponseEntity<>(repository.findAll().stream()
+														.map(ConquerDTO::fromEntity)
+														.collect(Collectors.toList()),				
+														HttpStatus.OK);		
+	}
+
+	
+	public ResponseEntity<?> findById(String conquerId) {
+		Conquer conquer = repository.findById(conquerId).orElseThrow(() -> new DataNotFoundException("Conquista não encontrada"));
+		return new ResponseEntity<>(ConquerDTO.fromEntity(conquer), HttpStatus.OK);
+	}
+
+	@Transactional
+	public ResponseEntity<?> delete(String conquerId) {
+		Conquer conquer = repository.findById(conquerId).orElseThrow(() -> new DataNotFoundException("Conquista não encontrada"));
+		repository.delete(conquer);
+		return new ResponseEntity<>("Conquista removida com sucesso", HttpStatus.NO_CONTENT);
 	}
 
 }

@@ -16,6 +16,7 @@ import com.housepass.user.app.dtos.EvaluationDTO;
 import com.housepass.user.app.entities.Evaluation;
 import com.housepass.user.app.entities.User;
 import com.housepass.user.app.entities.UserResume;
+import com.housepass.user.app.exceptions.DataNotFoundException;
 import com.housepass.user.app.repositories.EvaluationRepository;
 import com.housepass.user.app.repositories.UserRepository;
 import com.housepass.user.app.repositories.UserResumeRepository;
@@ -35,8 +36,8 @@ public class EvaluationService {
 	@Transactional
 	public ResponseEntity<?> create( CreateEvaluationUserDTO dto) {
 		
-		UserResume userResumeEvaluator = this.loadUserResume(dto.getUserEvaluatorId());
-		User userReceiveEvaluation = userRepository.findById(dto.getUserReceiveEvaluationId()).get(); // usuario que recebeu a avaliação
+		UserResume userResumeEvaluator = userResumeRepository.findByUserId(dto.getUserEvaluatorId());
+		User userReceiveEvaluation = userRepository.findById(dto.getUserReceiveEvaluationId()).orElseThrow(() -> new DataNotFoundException("Usuário não encontrado"));
 						
 		Evaluation eval = CreateEvaluationUserDTO.toEntity(dto);
 		eval.setUserEvaluator(userResumeEvaluator);
@@ -54,6 +55,7 @@ public class EvaluationService {
 	}
  
 
+	
 	public ResponseEntity<?> findAll() {
 		return new ResponseEntity<>(repository.findAll().stream()
 												 	   .map(EvaluationDTO::fromEntity)
@@ -61,17 +63,23 @@ public class EvaluationService {
 									HttpStatus.OK);
 	}
 	
-	
-	
-	private UserResume loadUserResume(String userId) {
-		UserResume userResume = userResumeRepository.findByUserId(userId); 
-		if ( userResume == null ) {
-			User user = userRepository.findById(userId).get(); 
-			userResume = UserResume.fromEntity(user);			
-			userResumeRepository.insert(userResume);
-			return userResume;
-		}
-		return userResume;
+	@Transactional
+	public ResponseEntity<?> deleteById(String evaluationId) {
+		
+		Evaluation eval = repository.findById(evaluationId).orElseThrow(() -> new DataNotFoundException("Avaliação não encontrada"));
+		User user = userRepository.findById(eval.getUserReceiveEvaluationId()).orElseThrow(() -> new DataNotFoundException("Usuario não encontrado ou já deletado"));
+		
+		user.getEvaluations().remove(eval);
+		userRepository.save(user);	
+		repository.delete(eval);
+		
+		return new ResponseEntity<>("Avaliação foi removida com sucesso", HttpStatus.NO_CONTENT);
 	}
+	
+	public ResponseEntity<?> findById(String evaluationId) {
+		Evaluation eval = repository.findById(evaluationId).orElseThrow(() -> new DataNotFoundException("Avaliação não encontrada"));		
+		return new ResponseEntity<>(EvaluationDTO.fromEntity(eval), HttpStatus.OK);
+	}
+ 
 
 }

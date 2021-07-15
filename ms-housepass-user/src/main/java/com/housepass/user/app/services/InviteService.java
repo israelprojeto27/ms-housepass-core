@@ -44,7 +44,7 @@ public class InviteService {
 	@Transactional
 	public ResponseEntity<?> create(CreateInviteDTO dto) {
 		
-		UserResume userSendInvite = this.loadUserResume(dto.getUserSendInviteId());
+		UserResume userSendInvite = userResumeRepository.findByUserId(dto.getUserSendInviteId());
 		Invite invite = CreateInviteDTO.toEntity(dto);
 		invite.setUserSendInvite(userSendInvite);
 		repository.insert(invite);
@@ -79,7 +79,7 @@ public class InviteService {
 		
 		if (dto.getStatusInvite().equals(StatusEnum.ACCEPTED)) { // o convite aceito deve virar uma conexao		
 			UserResume userResumeSendInvite =  invite.getUserSendInvite();
-			UserResume userResumeReceiveInvite = loadUserResume(invite.getUserReceiveInviteId());
+			UserResume userResumeReceiveInvite = userResumeRepository.findByUserId(invite.getUserReceiveInviteId());
 			
 			User userSendInvite = userRepository.findById(invite.getUserSendInvite().getUserId()).orElseThrow(() -> new DataNotFoundException("Usuário não encontrado"));
 			ConnectionUser user1 =  ConnectionUser.fromEntity(userResumeReceiveInvite);
@@ -116,8 +116,7 @@ public class InviteService {
 			userRceiveInvite.getInvites().remove(invite);
 			userRepository.save(userRceiveInvite);
 			
-			repository.delete(invite);			
-			
+			repository.delete(invite);
 		}
 		
 		return new ResponseEntity<>("Convite atualizado com sucesso", HttpStatus.NO_CONTENT);
@@ -128,27 +127,11 @@ public class InviteService {
 	public ResponseEntity<?> deleteById(String inviteId) {		
 		Invite invite = repository.findById(inviteId).orElseThrow(() -> new DataNotFoundException("Convite não encontrado"));
 		User user = userRepository.findById(invite.getUserReceiveInviteId()).orElseThrow(() -> new DataNotFoundException("Usuário não encontrado"));
-		if ( user.getInvites() != null) {		
-			user.getInvites().remove(invite);
-			userRepository.save(user);
-		}
 		
+		user.getInvites().remove(invite);
+		userRepository.save(user);		
 		repository.delete(invite);
+		
 		return new ResponseEntity<>("Convite removido com sucesso", HttpStatus.NO_CONTENT);
-	}
-	
-	
-	private UserResume loadUserResume(String userId) {
-		UserResume userResume = userResumeRepository.findByUserId(userId); // usuario que enviou o convite
-		if ( userResume == null ) {
-			User user = userRepository.findById(userId).orElseThrow(() -> new DataNotFoundException("Usuário não encontrado"));
-			userResume = UserResume.fromEntity(user);			
-			userResumeRepository.insert(userResume);
-			return userResume;
-		}
-		return userResume;
-	}
-
-	
-
+	} 
 }

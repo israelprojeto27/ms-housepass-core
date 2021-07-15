@@ -1,6 +1,7 @@
 package com.housepass.imoveis.app.entities;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -52,7 +53,7 @@ public class Imovel {
 	private User userOwner;
 	
 	@DBRef(lazy = true)
-	private List<Oferta> ofertas;
+	private List<Oferta> ofertas = new ArrayList<Oferta>();
 	
 	@DBRef(lazy = true)
 	private List<Comentario> comentarios;

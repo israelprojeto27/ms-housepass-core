@@ -40,7 +40,7 @@ public class RecommendationService {
 	@Transactional
 	public ResponseEntity<?> create(CreateRecomendationUserDTO dto) {
 
-		UserResume userResumeSendRecommendation = this.loadUserResume(dto.getUserSendRecommendationId()); // usuario que enviou a recomendacao
+		UserResume userResumeSendRecommendation = userResumeRepository.findByUserId(dto.getUserSendRecommendationId());
 		User userReceiveRecommendation = userRepository.findById(dto.getUserReceiveRecommendationId()).orElseThrow(() -> new DataNotFoundException("Usuário não encontrada"));
 		
 		Recommendation recommendation = CreateRecomendationUserDTO.toEntity(dto);
@@ -77,10 +77,8 @@ public class RecommendationService {
 		if ( dto.getStatusRecommendation().equals(StatusEnum.REJECTED)) {
 			User user = userRepository.findById(recommendation.getUserReceiveRecommendationId()).orElseThrow(() -> new DataNotFoundException("Usuário não encontrado"));
 			
-			if ( user.getRecommendations() != null ) {
-				user.getRecommendations().remove(recommendation);
-				userRepository.save(user);
-			}
+			user.getRecommendations().remove(recommendation);
+			userRepository.save(user);
 			
 			repository.delete(recommendation);
 		}
@@ -100,28 +98,11 @@ public class RecommendationService {
 		Recommendation recommendation = repository.findById(recommendationId).orElseThrow(() -> new DataNotFoundException("Recomendação não encontrada"));
 		User user = userRepository.findById(recommendation.getUserReceiveRecommendationId()).orElseThrow(() -> new DataNotFoundException("Usuário não encontrado"));
 		
-		if ( user.getRecommendations() != null ) {
-			user.getRecommendations().remove(recommendation);
-			userRepository.save(user);
-		}
-		
+		user.getRecommendations().remove(recommendation);
+		userRepository.save(user);		
 		repository.delete(recommendation);
 		
 		return new ResponseEntity<>("Recomendação removida com sucesso", HttpStatus.NO_CONTENT);
 	}
-	
-	private UserResume loadUserResume(String userId) {
-		UserResume userResume = userResumeRepository.findByUserId(userId); // usuario que enviou o convite
-		if ( userResume == null ) {
-			User user = userRepository.findById(userId).get(); // usuario que recebeu o convite
-			userResume = UserResume.fromEntity(user);			
-			userResumeRepository.insert(userResume);
-			return userResume;
-		}
-		return userResume;
-	}
-
-
-	
-
+ 
 }

@@ -1,7 +1,6 @@
 package com.housepass.imoveis.app.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -9,9 +8,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.housepass.imoveis.app.dtos.CreateImovelDTO;
+import com.housepass.imoveis.app.dtos.CreateUserResumeImovellDTO;
 import com.housepass.imoveis.app.dtos.UpdateImovelDTO;
 import com.housepass.imoveis.app.services.ImovelService;
 
@@ -30,8 +31,7 @@ public class ImovelController {
 	@ApiOperation(value = "Cadastro de um novo imóvel")
 	@PostMapping("")
 	public ResponseEntity<?> create(@RequestBody CreateImovelDTO dto){
-		service.create(dto);
-		return new ResponseEntity<>("Imovel criado com sucesso", HttpStatus.CREATED);
+		return service.create(dto);		
 	}
 	
 	@ApiOperation(value = "Atualiza informações do imóvel")
@@ -45,14 +45,16 @@ public class ImovelController {
 	@ApiOperation(value = "Buscar todos os imoveis")
 	@GetMapping("")
 	public ResponseEntity<?> findAll() {
-		return new ResponseEntity<>(service.findAll(), HttpStatus.OK);
+		return service.findAll();
 	}
 	
 	
 	@ApiOperation(value = "Buscar imovel por Id")
 	@GetMapping("/{imovelId}")
 	public ResponseEntity<?> findById(@PathVariable String imovelId) {
-		return new ResponseEntity<>(service.findById(imovelId), HttpStatus.OK);
+		return service.findById(imovelId);
 	}
+
+	
 
 }

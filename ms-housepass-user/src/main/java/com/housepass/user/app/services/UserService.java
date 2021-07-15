@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.housepass.user.app.dtos.ChangePasswordUserDTO;
 import com.housepass.user.app.dtos.CreateUserDTO;
+import com.housepass.user.app.dtos.CreateUserResumeImovellDTO;
 import com.housepass.user.app.dtos.ImovelUserDTO;
 import com.housepass.user.app.dtos.UpdateImovelUserDTO;
 import com.housepass.user.app.dtos.UpdateUserDTO;
@@ -19,27 +20,44 @@ import com.housepass.user.app.dtos.UserDTO;
 import com.housepass.user.app.dtos.UserOwnerImovelDTO;
 import com.housepass.user.app.entities.Imovel;
 import com.housepass.user.app.entities.User;
+import com.housepass.user.app.entities.UserResume;
+import com.housepass.user.app.exceptions.DataNotFoundException;
+import com.housepass.user.app.feignClient.ImovelClient;
 import com.housepass.user.app.repositories.ImovelRepository;
 import com.housepass.user.app.repositories.UserRepository;
+import com.housepass.user.app.repositories.UserResumeRepository;
 
 @Service
 public class UserService {
 	
 	@Autowired
-	private UserRepository repository;	
+	private UserRepository repository;
+	
+	@Autowired
+	private UserResumeRepository userRepository;
 	
 	@Autowired
 	private ImovelRepository imovelRepository;
 	
+	@Autowired
+	private ImovelClient imovelClient;
 
 	@Transactional
-	public void create(CreateUserDTO dto) {	
+	public ResponseEntity<?> create(CreateUserDTO dto) {	
 		User user = CreateUserDTO.toEntity(dto);	
 		repository.insert(user);
+		
+		UserResume userResume = UserResume.fromEntity(user);
+		userRepository.insert(userResume);
+		
+		CreateUserResumeImovellDTO userResumeImovelDTO = CreateUserResumeImovellDTO.fromEntity(userResume);
+		imovelClient.addUserResume(userResumeImovelDTO);
+		
+		return new ResponseEntity<>("Usuário criado com sucesso", HttpStatus.CREATED);
 	}
 
 	public UserDTO findById(String userId) {	
-		User user = repository.findById(userId).get();
+		User user = repository.findById(userId).orElseThrow(() -> new DataNotFoundException("Usuário não encontrado"));
 		return UserDTO.fromEntity(user);
 	}
 
@@ -56,13 +74,13 @@ public class UserService {
 	}
 
 	public UserOwnerImovelDTO findByIdOwnerImovel(String userId) {
-		User user = repository.findById(userId).get();
+		User user = repository.findById(userId).orElseThrow(() -> new DataNotFoundException("Usuário não encontrado"));
 		return UserOwnerImovelDTO.fromEntity(user);
 	}
 
 	@Transactional
 	public ResponseEntity<?> updateUser(String userId, UpdateUserDTO dto) {
-		User user = repository.findById(userId).get();		
+		User user = repository.findById(userId).orElseThrow(() -> new DataNotFoundException("Usuário não encontrado"));	
 		User userUpdate = repository.findByEmail(dto.getEmail());
 		
 		if (userUpdate != null && !user.getId().equals(userUpdate.getId())) {
@@ -82,7 +100,7 @@ public class UserService {
 	@Transactional
 	public ResponseEntity<?> changePassword(String userId, ChangePasswordUserDTO dto) {
 
-		User user = repository.findById(userId).get();
+		User user = repository.findById(userId).orElseThrow(() -> new DataNotFoundException("Usuário não encontrado"));	
 		if (! dto.getPassword().equals(dto.getConfirmPassword())) {
 			return new ResponseEntity<>("Password e confirma password não conferem", HttpStatus.BAD_REQUEST);
 		}
@@ -94,7 +112,7 @@ public class UserService {
 	
 	@Transactional
 	public ResponseEntity<?> addImovel(String userId, ImovelUserDTO dto) {
-		User user = repository.findById(userId).get();
+		User user = repository.findById(userId).orElseThrow(() -> new DataNotFoundException("Usuário não encontrado"));	
 		Imovel imovel = ImovelUserDTO.toEntity(dto, userId);
 		
 		imovelRepository.insert(imovel);
@@ -125,6 +143,16 @@ public class UserService {
 		imovelRepository.save(imovel);
 		
 		return new ResponseEntity<>("Informação do imovel atualizada com sucesso", HttpStatus.NO_CONTENT);
+	}
+
+	@Transactional
+	public ResponseEntity<?> delete(String userId) {
+		User user = repository.findById(userId).orElseThrow(() -> new DataNotFoundException("Usuário não encontrado"));	
+		repository.delete(user);
+		
+		imovelClient.deleteUserResume(userId);
+		
+		return new ResponseEntity<>("Usuario deletado com sucesso", HttpStatus.NO_CONTENT);
 	}
 
 }

@@ -2,7 +2,9 @@ package com.housepass.user.app.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,6 +34,19 @@ public class ConquerController {
 	@GetMapping
 	public ResponseEntity<?> findAll() {
 		return service.findAll();		
+	}
+	
+	@ApiOperation(value = "Buscar conquista por Id")
+	@GetMapping("/{conquerId}")
+	public ResponseEntity<?> findById(@PathVariable String conquerId) {
+		return service.findById(conquerId);		
+	}
+	
+	
+	@ApiOperation(value = "Remove conquista por Id")
+	@DeleteMapping("/{conquerId}")
+	public ResponseEntity<?> delete(@PathVariable String conquerId) {
+		return service.delete(conquerId);		
 	}
 	
 
