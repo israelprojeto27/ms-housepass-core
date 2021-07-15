@@ -19,6 +19,7 @@ import com.housepass.user.app.entities.Recommendation;
 import com.housepass.user.app.entities.User;
 import com.housepass.user.app.entities.UserResume;
 import com.housepass.user.app.enums.StatusEnum;
+import com.housepass.user.app.exceptions.DataNotFoundException;
 import com.housepass.user.app.repositories.RecommendationRepository;
 import com.housepass.user.app.repositories.UserRepository;
 import com.housepass.user.app.repositories.UserResumeRepository;
@@ -40,7 +41,7 @@ public class RecommendationService {
 	public ResponseEntity<?> create(CreateRecomendationUserDTO dto) {
 
 		UserResume userResumeSendRecommendation = this.loadUserResume(dto.getUserSendRecommendationId()); // usuario que enviou a recomendacao
-		User userReceiveRecommendation = userRepository.findById(dto.getUserReceiveRecommendationId()).get(); // usuario que recebeu a recomendacao
+		User userReceiveRecommendation = userRepository.findById(dto.getUserReceiveRecommendationId()).orElseThrow(() -> new DataNotFoundException("Usuário não encontrada"));
 		
 		Recommendation recommendation = CreateRecomendationUserDTO.toEntity(dto);
 		recommendation.setUserSendRecommendation(userResumeSendRecommendation);
@@ -67,17 +68,46 @@ public class RecommendationService {
 
 	@Transactional
 	public ResponseEntity<?> updateStatus(UpdateStatusRecomendationUserDTO dto) {
-		Recommendation recommendation = repository.findById(dto.getRecommendationId()).get();
+		Recommendation recommendation = repository.findById(dto.getRecommendationId()).orElseThrow(() -> new DataNotFoundException("Recomendação não encontrada"));
 		
 		if (! recommendation.getUserReceiveRecommendationId().equals(dto.getUserReceiveRecommendationId())) {			
 			return new ResponseEntity<>("Não é possível atualizar status da Recomendação, pois usuario nao tem autorização para alterar", HttpStatus.BAD_REQUEST);
 		}
 		
-		recommendation.setStatusEvaluation(dto.getStatusRecommendation());
-		recommendation.setUpdatedDate(LocalDateTime.now());
-		repository.save(recommendation);
+		if ( dto.getStatusRecommendation().equals(StatusEnum.REJECTED)) {
+			User user = userRepository.findById(recommendation.getUserReceiveRecommendationId()).orElseThrow(() -> new DataNotFoundException("Usuário não encontrado"));
+			
+			if ( user.getRecommendations() != null ) {
+				user.getRecommendations().remove(recommendation);
+				userRepository.save(user);
+			}
+			
+			repository.delete(recommendation);
+		}
+		else {
+			recommendation.setStatusEvaluation(dto.getStatusRecommendation());
+			recommendation.setUpdatedDate(LocalDateTime.now());
+			repository.save(recommendation);	
+		}
 		
 		return new ResponseEntity<>("Recomendação atualizada com sucesso", HttpStatus.NO_CONTENT);
+	}
+	
+	
+	@Transactional
+	public ResponseEntity<?> deleteById(String recommendationId) {
+		
+		Recommendation recommendation = repository.findById(recommendationId).orElseThrow(() -> new DataNotFoundException("Recomendação não encontrada"));
+		User user = userRepository.findById(recommendation.getUserReceiveRecommendationId()).orElseThrow(() -> new DataNotFoundException("Usuário não encontrado"));
+		
+		if ( user.getRecommendations() != null ) {
+			user.getRecommendations().remove(recommendation);
+			userRepository.save(user);
+		}
+		
+		repository.delete(recommendation);
+		
+		return new ResponseEntity<>("Recomendação removida com sucesso", HttpStatus.NO_CONTENT);
 	}
 	
 	private UserResume loadUserResume(String userId) {
@@ -90,5 +120,8 @@ public class RecommendationService {
 		}
 		return userResume;
 	}
+
+
+	
 
 }

@@ -2,8 +2,10 @@ package com.housepass.user.app.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,6 +43,13 @@ public class InviteController {
 	@PatchMapping
 	public ResponseEntity<?> create(@RequestBody UpdateStatusInviterDTO dto) {
 		return service.updateStatus(dto);		
+	}
+	
+	
+	@ApiOperation(value = "Deleta um convite por Id")
+	@DeleteMapping("/{inviteId}")
+	public ResponseEntity<?> delete(@PathVariable String inviteId) {
+		return service.deleteById(inviteId);		
 	}
 
 }
