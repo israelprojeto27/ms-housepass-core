@@ -22,9 +22,9 @@ public class Comentario {
 	private String id;
 	
 	private String imovelId;
-	private LocalDateTime data;
-	private String descricao;
+	private LocalDateTime createdDate;
+	private String comentario;
 	
 	@DBRef
-	private User userComentario;
+	private UserResume userComentario;
 }

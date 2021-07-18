@@ -19,17 +19,17 @@ public class ComentarioDTO {
 	private String userId;
 	private String username;
 	private String userImageUrl;
-	private String descricao;
-	private LocalDateTime dataComentario;
+	private String comentario;
+	private LocalDateTime createdDate;
 	
 	public static ComentarioDTO fromEntity(Comentario comentario) {
 		return ComentarioDTO.builder()
 				.id(comentario.getId())
 				.userId(comentario.getUserComentario().getUserId())
-				.username(comentario.getUserComentario().getUsername())
-				.userImageUrl(comentario.getUserComentario().getUserImageUrl())
-				.descricao(comentario.getDescricao())
-				.dataComentario(comentario.getData())
+				.username(comentario.getUserComentario().getUserName())
+				.userImageUrl(comentario.getUserComentario().getImageUrl())
+				.comentario(comentario.getComentario())
+				.createdDate(comentario.getCreatedDate())
 				.build();
 	}
 

@@ -21,8 +21,9 @@ public class Visitante {
 	@Id
 	private String id;
 	
-	private LocalDateTime dataVisita;
+	private String imovelId;
+	private LocalDateTime createdDate;
 	
 	@DBRef
-	private User userVisitante;
+	private UserResume userVisitante;
 }

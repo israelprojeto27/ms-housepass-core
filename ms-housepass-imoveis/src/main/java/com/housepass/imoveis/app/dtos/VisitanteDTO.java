@@ -19,15 +19,15 @@ public class VisitanteDTO {
 	private String userId;
 	private String username;
 	private String userImageUrl;
-	private LocalDateTime dataVisita;
+	private LocalDateTime createdDate;
 	
 	public static VisitanteDTO fromEntity(Visitante visitante) {
 		return VisitanteDTO.builder()
 				.id(visitante.getId())
 				.userId(visitante.getUserVisitante().getUserId())
-				.username(visitante.getUserVisitante().getUsername())
-				.userImageUrl(visitante.getUserVisitante().getUserImageUrl())				
-				.dataVisita(visitante.getDataVisita())
+				.username(visitante.getUserVisitante().getUserName())
+				.userImageUrl(visitante.getUserVisitante().getImageUrl())				
+				.createdDate(visitante.getCreatedDate())
 				.build();
 	}
 }

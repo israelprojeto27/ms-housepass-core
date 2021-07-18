@@ -19,18 +19,18 @@ public class AvaliacaoDTO {
 	private String userId;
 	private String username;
 	private String userImageUrl;
-	private String descricao;
+	private String obs;
 	private Integer rate; 
-	private LocalDateTime dataAvaliacao;
+	private LocalDateTime createdDate;
 	
 	public static AvaliacaoDTO fromEntity(Avaliacao avaliacao) {
 		return AvaliacaoDTO.builder()
 				.id(avaliacao.getId())
 				.userId(avaliacao.getUserAvaliacao().getUserId())
-				.username(avaliacao.getUserAvaliacao().getUsername())
-				.userImageUrl(avaliacao.getUserAvaliacao().getUserImageUrl())
-				.descricao(avaliacao.getDescricao())
-				.dataAvaliacao(avaliacao.getData())
+				.username(avaliacao.getUserAvaliacao().getUserName())
+				.userImageUrl(avaliacao.getUserAvaliacao().getImageUrl())
+				.obs(avaliacao.getObs())
+				.createdDate(avaliacao.getCreatedDate())
 				.rate(avaliacao.getRate())
 				.build();
 	}

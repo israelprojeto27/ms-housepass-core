@@ -33,7 +33,7 @@ public class OfertaController {
 	
 	
 	@ApiOperation(value = "Buscar todass as ofertas cadastradas")
-	@GetMapping("")
+	@GetMapping
 	public ResponseEntity<?> findAll() {
 		return service.findAll();
 	}

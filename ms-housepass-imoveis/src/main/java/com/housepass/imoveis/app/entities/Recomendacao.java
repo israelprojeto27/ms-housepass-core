@@ -22,10 +22,10 @@ public class Recomendacao {
 	private String id;
 	
 	private String imovelId;
-	private LocalDateTime data;
+	private LocalDateTime createdDate;
 	private String descricao;
 	
 	@DBRef
-	private User userRecomendacao;
+	private UserResume userRecomendacao;
 
 }

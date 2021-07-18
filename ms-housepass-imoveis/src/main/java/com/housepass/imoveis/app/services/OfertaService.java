@@ -33,7 +33,7 @@ public class OfertaService {
 	@Transactional
 	public ResponseEntity<?> create(CreateOfertaDTO dto) {
 		
-		Imovel imovel = imovelRepository.findById(dto.getImovelId()).orElseThrow(() -> new DataNotFoundException("Usuário não encontrado"));
+		Imovel imovel = imovelRepository.findById(dto.getImovelId()).orElseThrow(() -> new DataNotFoundException("Imovel não encontrado"));
 		
 		Oferta oferta = CreateOfertaDTO.toEntity(dto);
 		UserResume userResume = userResumeRepository.findByUserId(dto.getUserId());
@@ -61,7 +61,7 @@ public class OfertaService {
 
 	public ResponseEntity<?> delete(String ofertaId) {
 		Oferta oferta = repository.findById(ofertaId).orElseThrow(() -> new DataNotFoundException("Oferta não encontrada"));
-		Imovel imovel = imovelRepository.findById(oferta.getImovelId()).get();
+		Imovel imovel = imovelRepository.findById(oferta.getImovelId()).orElseThrow(() -> new DataNotFoundException("Imóvel não encontrado"));
 		
 		imovel.getOfertas().remove(oferta);
 		imovelRepository.save(imovel);

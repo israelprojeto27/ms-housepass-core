@@ -42,6 +42,7 @@ public class ImovelDTO {
 	private List<ValorImovelDTO> valoresImovel;
 	private List<AvaliacaoDTO> avaliacoes;	
 	private List<RecomendacaoDTO> recomendacoes;
+	private List<VisitanteDTO> visitantes;
 	
 	private long quantLikes;
 	private long quantViews;
@@ -75,11 +76,12 @@ public class ImovelDTO {
 				.quantGaragem(imovel.getQuantGaragem())
 				.quantSuite(imovel.getQuantSuite())
 				.mobiliado(imovel.getMobiliado())				
-				.ofertas(imovel.getOfertas() != null ? imovel.getOfertas().stream().map(offer -> OfertaDTO.fromEntity(offer)).collect(Collectors.toList()) : null)
-				.comentarios(imovel.getComentarios() != null ? imovel.getComentarios().stream().map(comm -> ComentarioDTO.fromEntity(comm)).collect(Collectors.toList()) : null)
-				.valoresImovel(imovel.getValoresImovel() != null ? imovel.getValoresImovel().stream().map(val -> ValorImovelDTO.fromEntity(val)).collect(Collectors.toList()) : null)
-				.avaliacoes(imovel.getAvaliacoes() != null ? imovel.getAvaliacoes().stream().map(aval -> AvaliacaoDTO.fromEntity(aval)).collect(Collectors.toList()) : null)
-				.recomendacoes(imovel.getRecomendacoes() != null ? imovel.getRecomendacoes().stream().map(recom -> RecomendacaoDTO.fromEntity(recom)).collect(Collectors.toList()) : null)
+				.ofertas(imovel.getOfertas() != null && !imovel.getOfertas().isEmpty() ? imovel.getOfertas().stream().map(OfertaDTO::fromEntity).collect(Collectors.toList()) : null)
+				.comentarios(imovel.getComentarios() != null && imovel.getComentarios().isEmpty() ? imovel.getComentarios().stream().map(ComentarioDTO::fromEntity).collect(Collectors.toList()) : null)
+				.valoresImovel(imovel.getValoresImovel() != null && !imovel.getValoresImovel().isEmpty() ? imovel.getValoresImovel().stream().map(ValorImovelDTO::fromEntity).collect(Collectors.toList()) : null)
+				.avaliacoes(imovel.getAvaliacoes() != null && !imovel.getAvaliacoes().isEmpty() ? imovel.getAvaliacoes().stream().map(AvaliacaoDTO::fromEntity).collect(Collectors.toList()) : null)
+				.recomendacoes(imovel.getRecomendacoes() != null && !imovel.getRecomendacoes().isEmpty() ? imovel.getRecomendacoes().stream().map(RecomendacaoDTO::fromEntity).collect(Collectors.toList()) : null)				
+				.visitantes(imovel.getVisitantes() != null && !imovel.getVisitantes().isEmpty() ? imovel.getVisitantes().stream().map(VisitanteDTO::fromEntity).collect(Collectors.toList()) : null)
 				.build();
 	}
 

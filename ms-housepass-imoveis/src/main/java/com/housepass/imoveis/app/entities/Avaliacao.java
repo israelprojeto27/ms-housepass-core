@@ -22,11 +22,11 @@ public class Avaliacao {
 	private String id;
 	
 	private String imovelId;
-	private LocalDateTime data;
-	private Integer rate; 		// avaliacao que pode variar de 1 a 5 
-	private String descricao;
+	private LocalDateTime createdDate;
+	private Integer rate; 		 
+	private String obs;
 	
 	@DBRef
-	private User userAvaliacao;
+	private UserResume userAvaliacao;
 	
 }

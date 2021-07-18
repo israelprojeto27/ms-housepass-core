@@ -56,19 +56,19 @@ public class Imovel {
 	private List<Oferta> ofertas = new ArrayList<Oferta>();
 	
 	@DBRef(lazy = true)
-	private List<Comentario> comentarios;
+	private List<Comentario> comentarios = new ArrayList<Comentario>();
 	
 	@DBRef(lazy = true)
-	private List<Recomendacao> recomendacoes;
+	private List<Recomendacao> recomendacoes = new ArrayList<Recomendacao>();
 	
 	@DBRef(lazy = true)
-	private List<Avaliacao> avaliacoes;
+	private List<Avaliacao> avaliacoes = new ArrayList<Avaliacao>();
 	
 	@DBRef(lazy = true)
-	private List<ValorImovel> valoresImovel;	
+	private List<ValorImovel> valoresImovel = new ArrayList<ValorImovel>();
 	
 	@DBRef(lazy = true)
-	private List<Visitante> visitantes;
+	private List<Visitante> visitantes  = new ArrayList<Visitante>();
 	
 
 	

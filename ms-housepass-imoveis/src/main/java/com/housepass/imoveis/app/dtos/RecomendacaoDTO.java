@@ -21,17 +21,17 @@ public class RecomendacaoDTO {
 	private String username;
 	private String userImageUrl;
 	private String descricao;	
-	private LocalDateTime dataRecomendacao;
+	private LocalDateTime createdDate;
 	
 	
 	public static RecomendacaoDTO fromEntity(Recomendacao recomendacao) {
 		return RecomendacaoDTO.builder()
 				.id(recomendacao.getId())
 				.userId(recomendacao.getUserRecomendacao().getUserId())
-				.username(recomendacao.getUserRecomendacao().getUsername())
-				.userImageUrl(recomendacao.getUserRecomendacao().getUserImageUrl())
+				.username(recomendacao.getUserRecomendacao().getUserName())
+				.userImageUrl(recomendacao.getUserRecomendacao().getImageUrl())
 				.descricao(recomendacao.getDescricao())
-				.dataRecomendacao(recomendacao.getData())				
+				.createdDate(recomendacao.getCreatedDate())				
 				.build();
 	}
 }
