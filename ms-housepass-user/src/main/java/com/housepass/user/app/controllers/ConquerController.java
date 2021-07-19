@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.housepass.user.app.dtos.CreateConquerUserDTO;
@@ -34,6 +35,12 @@ public class ConquerController {
 	@GetMapping
 	public ResponseEntity<?> findAll() {
 		return service.findAll();		
+	}
+	
+	@ApiOperation(value = "Filtrar as conquistas cadastradas")
+	@PostMapping("/filter")
+	public ResponseEntity<?> findByFilter(@RequestParam(value = "page") int page, @RequestParam(value = "size") int size) {
+		return service.findByFilter(page, size);
 	}
 	
 	@ApiOperation(value = "Buscar conquista por Id")

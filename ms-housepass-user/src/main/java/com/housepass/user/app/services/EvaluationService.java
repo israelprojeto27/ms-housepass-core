@@ -6,6 +6,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -79,6 +81,16 @@ public class EvaluationService {
 	public ResponseEntity<?> findById(String evaluationId) {
 		Evaluation eval = repository.findById(evaluationId).orElseThrow(() -> new DataNotFoundException("Avaliação não encontrada"));		
 		return new ResponseEntity<>(EvaluationDTO.fromEntity(eval), HttpStatus.OK);
+	}
+
+
+
+	public ResponseEntity<?> findByFilter(int page, int size) {
+		PageRequest pageable = PageRequest.of(page, size,  Sort.by("createdDate").descending());	
+		return new ResponseEntity<>(repository.findAll(pageable).stream()
+													 	.map(EvaluationDTO::fromEntity)
+													    .collect(Collectors.toList()),				
+										HttpStatus.OK);
 	}
  
 

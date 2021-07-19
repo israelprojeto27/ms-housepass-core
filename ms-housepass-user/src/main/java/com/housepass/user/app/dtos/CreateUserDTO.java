@@ -1,5 +1,7 @@
 package com.housepass.user.app.dtos;
 
+import java.time.LocalDateTime;
+
 import com.housepass.user.app.entities.User;
 import com.housepass.user.app.enums.TypeUserEnum;
 
@@ -39,6 +41,7 @@ public class CreateUserDTO {
 				.quantConnections(0l)
 				.quantImoveis(0l)
 				.quantPublications(0l)
+				.createdDate(LocalDateTime.now())
 				.build();
 	}
 	

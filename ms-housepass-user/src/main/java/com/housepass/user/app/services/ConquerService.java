@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -64,6 +66,14 @@ public class ConquerService {
 		Conquer conquer = repository.findById(conquerId).orElseThrow(() -> new DataNotFoundException("Conquista não encontrada"));
 		repository.delete(conquer);
 		return new ResponseEntity<>("Conquista removida com sucesso", HttpStatus.NO_CONTENT);
+	}
+
+	public ResponseEntity<?> findByFilter(int page, int size) {
+		PageRequest pageable = PageRequest.of(page, size,  Sort.by("createdDate").descending());	
+		return new ResponseEntity<>(repository.findAll(pageable).stream()
+														.map(ConquerDTO::fromEntity)
+														.collect(Collectors.toList()),				
+									HttpStatus.OK);	
 	}
 
 }

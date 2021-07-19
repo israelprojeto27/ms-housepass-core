@@ -5,6 +5,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -72,6 +74,15 @@ public class ImovelService {
 		userClient.updateImovelUser(imovel.getUserOwner().getUserId(), imovel.getId(), dto);
 		
 		return new ResponseEntity<>("Imovel atualizado com sucesso", HttpStatus.NO_CONTENT);
+	}
+
+	public ResponseEntity<?> findByFilter(int page, int size) {
+		PageRequest pageable = PageRequest.of(page, size,  Sort.by("updatedAt").descending());
+		
+		return new ResponseEntity<>(repository.findAll(pageable).stream()
+														.map(ImovelDTO::fromEntity)
+														.collect(Collectors.toList()), 
+										HttpStatus.OK);
 	}
 
 

@@ -1,10 +1,12 @@
 package com.housepass.user.app.services;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -61,11 +63,11 @@ public class UserService {
 		return UserDTO.fromEntity(user);
 	}
 
-	public List<UserDTO> findAll() {
-		List<User> list = repository.findAll(); 
-		return list.stream()
-				.map(UserDTO::fromEntity)
-				.collect(Collectors.toList());
+	public ResponseEntity<?> findAll() {
+		return new ResponseEntity<>(repository.findAll().stream()
+														.map(UserDTO::fromEntity)
+														.collect(Collectors.toList()), 
+										HttpStatus.OK);
 	}
 
 	public UserDTO findByEmailAndPassword(String login, String password) {
@@ -93,6 +95,7 @@ public class UserService {
 		user.setLocation(dto.getLocation());
 		user.setPhone(dto.getPhone());
 		user.setWebSite(dto.getWebSite());
+		user.setUpdatedDate(LocalDateTime.now());
 		repository.save(user);		
 		return new ResponseEntity<>("Usuario atualizado com sucesso", HttpStatus.NO_CONTENT);
 	}
@@ -153,6 +156,14 @@ public class UserService {
 		imovelClient.deleteUserResume(userId);
 		
 		return new ResponseEntity<>("Usuario deletado com sucesso", HttpStatus.NO_CONTENT);
+	}
+
+	public ResponseEntity<?> findByFilter(int page, int size) {
+		PageRequest pageable = PageRequest.of(page, size,  Sort.by("createdDate").descending());
+		return new ResponseEntity<>(repository.findAll(pageable).stream()
+														.map(UserDTO::fromEntity)
+														.collect(Collectors.toList()), 
+										HttpStatus.OK);
 	}
 
 }

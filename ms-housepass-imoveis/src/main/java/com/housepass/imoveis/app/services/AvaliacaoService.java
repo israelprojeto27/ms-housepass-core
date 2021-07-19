@@ -3,6 +3,8 @@ package com.housepass.imoveis.app.services;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -77,6 +79,17 @@ public class AvaliacaoService {
 		
 		repository.delete(avaliacao);		
 		return new ResponseEntity<>("Avaliação foi removida com sucesso", HttpStatus.NO_CONTENT);
+	}
+
+
+
+	public ResponseEntity<?> findByFilter(int page, int size) {
+		PageRequest pageable = PageRequest.of(page, size,  Sort.by("createdDate").descending());	
+		
+		return new ResponseEntity<>(repository.findAll(pageable).stream()
+														.map(AvaliacaoDTO::fromEntity)
+														.collect(Collectors.toList()), 
+										HttpStatus.OK);
 	}
 
 }

@@ -55,7 +55,13 @@ public class UserController {
 	@ApiOperation(value = "Listar todos os usuarios")
 	@GetMapping
 	public ResponseEntity<?> findAll() {
-		 return new ResponseEntity<>(service.findAll(), HttpStatus.OK);
+		 return service.findAll();
+	}
+	
+	@ApiOperation(value = "Filtrar os visitantes cadastrados")
+	@PostMapping("/filter")
+	public ResponseEntity<?> findByFilter(@RequestParam(value = "page") int page, @RequestParam(value = "size") int size) {
+		return service.findByFilter(page, size);
 	}
 	
 	

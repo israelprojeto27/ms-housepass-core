@@ -1,6 +1,7 @@
 package com.housepass.user.app.entities;
 
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
@@ -35,6 +36,8 @@ public class User {
 	private TypeUserEnum typeUser;
 	private String about;
 	private String imageUserUrl;	
+	private LocalDateTime createdDate;
+	private LocalDateTime updatedDate;
 	
 	private long quantConnections;
 	private long quantImoveis;
