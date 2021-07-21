@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.housepass.user.app.dtos.ConquerDTO;
 import com.housepass.user.app.dtos.CreateInviteDTO;
 import com.housepass.user.app.dtos.InviteDTO;
 import com.housepass.user.app.dtos.RecommendationDTO;
@@ -143,5 +144,25 @@ public class InviteService {
 													    .map(InviteDTO::fromEntity)
 													    .collect(Collectors.toList()),
 										HttpStatus.OK);
+	}
+
+	public ResponseEntity<?> findByUserId(String userId) {
+		User user = userRepository.findById(userId).orElseThrow(() -> new DataNotFoundException("Usuario não encontrado"));		
+		
+		return new ResponseEntity<>(user.getInvites().stream()
+													  .map(InviteDTO::fromEntity)
+													  .collect(Collectors.toList()),				
+									HttpStatus.OK);	
+	}
+
+	public ResponseEntity<?> findByFilterByUserId(String userId, int page, int size) {
+		User user = userRepository.findById(userId).orElseThrow(() -> new DataNotFoundException("Usuario não encontrado"));		
+		
+		return new ResponseEntity<>(user.getInvites().stream()
+													  .skip(page * size)
+													  .limit(size)
+													  .map(InviteDTO::fromEntity)
+													  .collect(Collectors.toList()),				
+									HttpStatus.OK);	
 	} 
 }

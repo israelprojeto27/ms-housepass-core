@@ -10,4 +10,6 @@ public interface ImovelRepository extends MongoRepository<Imovel, String>{
 
 	Imovel findByUserIdAndImovelId(String userId, String imovelId);
 
+	Imovel findByImovelIdAndUserId(String imovelId, String userId);
+
 }

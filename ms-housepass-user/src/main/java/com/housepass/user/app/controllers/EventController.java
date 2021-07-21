@@ -67,5 +67,17 @@ public class EventController {
 		
 		return service.update(eventId, dto);		
 	}
+	
+	@ApiOperation(value = "Buscar eventos por User Id")
+	@GetMapping("/findByUser/{userId}")
+	public ResponseEntity<?> findByUserId(@PathVariable String userId) {
+		return service.findByUserId(userId);
+	}
+	
+	@ApiOperation(value = "Paginar eventos por User Id")
+	@GetMapping("/filterByUser/{userId}")
+	public ResponseEntity<?> findByFilterByUserId(@PathVariable String userId, @RequestParam(value = "page") int page, @RequestParam(value = "size") int size) {
+		return service.findByFilterByUserId(userId, page, size);
+	}
 
 }

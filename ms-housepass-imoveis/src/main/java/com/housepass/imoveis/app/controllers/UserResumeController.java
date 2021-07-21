@@ -31,13 +31,23 @@ public class UserResumeController {
 	public @ResponseBody String addUserResume(@RequestBody CreateUserResumeImovellDTO dto){
 		 return service.add(dto);		 
 	}
+	
+	
+	@ApiOperation(value = "Busca um User Resume por Id")
+	@GetMapping("/findUserResume/{userId}")
+	public @ResponseBody String findUserResume(@PathVariable String userId) {
+		return service.findById(userId);	
+	}
 
 	
+	@ApiOperation(value = "Deleta um User Resume por Id")
 	@DeleteMapping("/deleteUserResume/{userId}")
 	public @ResponseBody String deleteUserResume(@PathVariable String userId) {
 		return service.delete(userId);	
 	}
 	
+	
+	@ApiOperation(value = "Lista todos os User Resume")
 	@GetMapping
 	public ResponseEntity<?> findAll() {
 		return service.findAll();	

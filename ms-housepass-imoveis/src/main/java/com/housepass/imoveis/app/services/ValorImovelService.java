@@ -80,4 +80,27 @@ public class ValorImovelService {
 														.collect(Collectors.toList()), 
 									HttpStatus.OK);
 	}
+
+
+	public ResponseEntity<?> findByImovelId(String imovelId) {
+		Imovel imovel = imovelRepository.findById(imovelId).orElseThrow(() -> new DataNotFoundException("Imovel não encontrado"));
+		
+		return new ResponseEntity<>(imovel.getValoresImovel().stream()
+													.map(ValorImovelDTO::fromEntity)
+													.collect(Collectors.toList()), 
+									HttpStatus.OK);
+	}
+
+
+	public ResponseEntity<?> findByFilterByImovelId(String imovelId, int page, int size) {
+		Imovel imovel = imovelRepository.findById(imovelId).orElseThrow(() -> new DataNotFoundException("Imovel não encontrado"));
+		
+		return new ResponseEntity<>(imovel.getValoresImovel().stream()
+													.skip(page * size)
+													.limit(size)
+													.map(ValorImovelDTO::fromEntity)
+													.collect(Collectors.toList()), 
+									HttpStatus.OK);
+	}
+	
 }

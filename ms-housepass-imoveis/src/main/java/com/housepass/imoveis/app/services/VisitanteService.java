@@ -92,4 +92,26 @@ public class VisitanteService {
 					HttpStatus.OK);
 	}
 
+
+	public ResponseEntity<?> findByImovelId(String imovelId) {
+		Imovel imovel = imovelRepository.findById(imovelId).orElseThrow(() -> new DataNotFoundException("Imovel não encontrado"));
+		
+		return new ResponseEntity<>(imovel.getVisitantes().stream()
+													.map(VisitanteDTO::fromEntity)
+													.collect(Collectors.toList()), 
+									HttpStatus.OK);
+	}
+
+
+	public ResponseEntity<?> findByFilterByImovelId(String imovelId, int page, int size) {
+		Imovel imovel = imovelRepository.findById(imovelId).orElseThrow(() -> new DataNotFoundException("Imovel não encontrado"));
+		
+		return new ResponseEntity<>(imovel.getVisitantes().stream()
+													.skip(page * size)
+													.limit(size)
+													.map(VisitanteDTO::fromEntity)
+													.collect(Collectors.toList()), 
+									HttpStatus.OK);
+	}
+
 }

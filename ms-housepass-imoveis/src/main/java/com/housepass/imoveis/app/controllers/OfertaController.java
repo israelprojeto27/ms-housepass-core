@@ -60,5 +60,18 @@ public class OfertaController {
 		return service.delete(ofertaId);
 	}
 	
+	
+	@ApiOperation(value = "Buscar ofertas por Imovel Id")
+	@GetMapping("/findByImovel/{imovelId}")
+	public ResponseEntity<?> findByImovelId(@PathVariable String imovelId) {
+		return service.findByImovelId(imovelId);
+	}
+	
+	@ApiOperation(value = "Paginar ofertas por Imovel Id")
+	@GetMapping("/filterByImovel/{imovelId}")
+	public ResponseEntity<?> findByFilterByImovelId(@PathVariable String imovelId, @RequestParam(value = "page") int page, @RequestParam(value = "size") int size) {
+		return service.findByFilterByImovelId(imovelId, page, size);
+	}
+	
 
 }

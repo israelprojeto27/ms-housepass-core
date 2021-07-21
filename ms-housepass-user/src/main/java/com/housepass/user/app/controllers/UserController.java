@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.housepass.user.app.dtos.ChangePasswordUserDTO;
@@ -42,13 +43,14 @@ public class UserController {
 	@ApiOperation(value = "Buscar um usuario por Id")
 	@GetMapping("/{userId}")
 	public ResponseEntity<?> findById(@PathVariable String  userId) {
-		 return new ResponseEntity<>(service.findById(userId), HttpStatus.OK);
-	}
+		 return service.findById(userId);
+	}	
+	
 	
 	@ApiOperation(value = "Buscar um usuario por Id")
 	@GetMapping("/ownerImovel/{userId}")
 	public ResponseEntity<?> findByIdOwner(@PathVariable String  userId) {
-		 return new ResponseEntity<>(service.findByIdOwnerImovel(userId), HttpStatus.OK);
+		 return service.findByIdOwnerImovel(userId);
 	}
 	
 	
@@ -90,7 +92,7 @@ public class UserController {
 	
 	@ApiOperation(value = "Adicionar imovel à lista de imoveis do usuario")
 	@PostMapping("/addImovel/{userId}")
-	public ResponseEntity<?> addImovelUser(@PathVariable String  userId,
+	public @ResponseBody String addImovelUser(@PathVariable String  userId,
 									  	   @RequestBody ImovelUserDTO dto) {		
 		return service.addImovel(userId, dto);
 	}
@@ -98,10 +100,19 @@ public class UserController {
 	
 	@ApiOperation(value = "Atualizar informações do imovel da lista de imoveis do usuario")
 	@PostMapping("/updateImovel/{userId}/{imovelId}")
-	public ResponseEntity<?> updateImovelUser(@PathVariable String  userId,
+	public @ResponseBody String updateImovelUser(@PathVariable String  userId,
 											  @PathVariable String  imovelId,
 									  	      @RequestBody UpdateImovelUserDTO dto) {		
 		return service.updateImovelUser(userId, imovelId, dto);
+	}
+	
+	
+	@ApiOperation(value = "Checa se exist um imovel a partir do imovelId e userId")
+	@GetMapping("/findImovelByUserByImovel/{userId}/{imovelId}")
+	public @ResponseBody String findImovelByImovelIdByUserId(@PathVariable String  userId,
+											  			     @PathVariable String  imovelId) {
+		
+		return service.findImovelByImovelIdByUserId(userId, imovelId);
 	}
 	
 	
@@ -110,7 +121,6 @@ public class UserController {
 	public ResponseEntity<?> delete(@PathVariable String  userId) {		
 		return service.delete(userId);
 	}
-	
 	
 
 }

@@ -58,5 +58,18 @@ public class InviteController {
 	public ResponseEntity<?> delete(@PathVariable String inviteId) {
 		return service.deleteById(inviteId);		
 	}
+	
+	
+	@ApiOperation(value = "Buscar convites por User Id")
+	@GetMapping("/findByUser/{userId}")
+	public ResponseEntity<?> findByUserId(@PathVariable String userId) {
+		return service.findByUserId(userId);
+	}
+	
+	@ApiOperation(value = "Paginar convites por User Id")
+	@GetMapping("/filterByUser/{userId}")
+	public ResponseEntity<?> findByFilterByUserId(@PathVariable String userId, @RequestParam(value = "page") int page, @RequestParam(value = "size") int size) {
+		return service.findByFilterByUserId(userId, page, size);
+	}
 
 }

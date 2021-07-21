@@ -1,7 +1,5 @@
 package com.housepass.imoveis.app.services;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,17 +11,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.housepass.imoveis.app.dtos.CreateImovelDTO;
-import com.housepass.imoveis.app.dtos.CreateUserResumeImovellDTO;
 import com.housepass.imoveis.app.dtos.ImovelDTO;
+import com.housepass.imoveis.app.dtos.ImovelUserDTO;
 import com.housepass.imoveis.app.dtos.UpdateImovelDTO;
 import com.housepass.imoveis.app.dtos.UserOwnerDTO;
 import com.housepass.imoveis.app.entities.Imovel;
 import com.housepass.imoveis.app.entities.User;
-import com.housepass.imoveis.app.entities.UserResume;
-import com.housepass.imoveis.app.repositories.ImovelRepository;
-import com.housepass.imoveis.app.repositories.UserResumeRepository;
 import com.housepass.imoveis.app.exceptions.DataNotFoundException;
 import com.housepass.imoveis.app.feignclients.UserClient;
+import com.housepass.imoveis.app.repositories.ImovelRepository;
 
 
 @Service
@@ -42,6 +38,16 @@ public class ImovelService {
 		User user = UserOwnerDTO.toEntity(userOwnerDTO);
 		imovel.setUserOwner(user);
 		repository.insert(imovel);
+		
+		ImovelUserDTO imovelUserDTO = ImovelUserDTO.fromEntity(imovel);
+		userClient.addImovelUser(user.getUserId(), imovelUserDTO);
+		
+		String ret = userClient.findImovelByImovelIdByUserId(user.getUserId(), imovel.getId());
+		if ( ret == null || (ret != null && ret.equals("N"))) {
+			repository.delete(imovel);
+			return new ResponseEntity<>("Não foi possível finalizar o cadastro do imovel", HttpStatus.NOT_ACCEPTABLE);
+		}
+		
 		return new ResponseEntity<>("Imovel criado com sucesso", HttpStatus.CREATED);
 	}
 
@@ -66,8 +72,7 @@ public class ImovelService {
 		imovel.setQuantComments(dto.getQuantComments());
 		imovel.setQuantLikes(dto.getQuantLikes());
 		imovel.setQuantShares(dto.getQuantShares());
-		imovel.setQuantViews(dto.getQuantViews());
-		
+		imovel.setQuantViews(dto.getQuantViews());		
 		
 		repository.save(imovel);
 		

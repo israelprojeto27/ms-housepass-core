@@ -42,4 +42,18 @@ public class UserResumeService {
 														.collect(Collectors.toList()), 
 									HttpStatus.OK);
 	}
+	
+	
+
+	public String findById(String userId) {
+		UserResume userResume = repository.findByUserId(userId);
+		if (userResume != null ) {
+			return "S";
+		}
+		else {
+			return "N";
+		}		
+	}
+	
+	
 }

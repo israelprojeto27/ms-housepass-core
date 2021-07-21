@@ -35,7 +35,7 @@ public class ConquerService {
 		Conquer conquer = CreateConquerUserDTO.toEntity(dto);
 		repository.insert(conquer);
 		
-		User user = userRepository.findById(dto.getUserId()).get();
+		User user = userRepository.findById(dto.getUserId()).orElseThrow(() -> new DataNotFoundException("Usuario não encontrado"));
 		if (user.getConquers() != null) {
 			user.getConquers().add(conquer);
 		}
@@ -73,6 +73,26 @@ public class ConquerService {
 		return new ResponseEntity<>(repository.findAll(pageable).stream()
 														.map(ConquerDTO::fromEntity)
 														.collect(Collectors.toList()),				
+									HttpStatus.OK);	
+	}
+
+	public ResponseEntity<?> findByUserId(String userId) {
+		User user = userRepository.findById(userId).orElseThrow(() -> new DataNotFoundException("Usuario não encontrado"));		
+		
+		return new ResponseEntity<>(user.getConquers().stream()
+													  .map(ConquerDTO::fromEntity)
+													  .collect(Collectors.toList()),				
+									HttpStatus.OK);	
+	}
+
+	public ResponseEntity<?> findByFilterByUserId(String userId, int page, int size) {
+		User user = userRepository.findById(userId).orElseThrow(() -> new DataNotFoundException("Usuario não encontrado"));		
+		
+		return new ResponseEntity<>(user.getConquers().stream()
+													  .skip(page * size)
+													  .limit(size)
+													  .map(ConquerDTO::fromEntity)
+													  .collect(Collectors.toList()),				
 									HttpStatus.OK);	
 	}
 

@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.housepass.imoveis.app.dtos.ComentarioDTO;
 import com.housepass.imoveis.app.dtos.CreateComentarioDTO;
+import com.housepass.imoveis.app.dtos.VisitanteDTO;
 import com.housepass.imoveis.app.entities.Comentario;
 import com.housepass.imoveis.app.entities.Imovel;
 import com.housepass.imoveis.app.entities.UserResume;
@@ -84,6 +85,29 @@ public class ComentarioService {
 	public ResponseEntity<?> findByFilter(int page, int size) {
 		PageRequest pageable = PageRequest.of(page, size,  Sort.by("createdDate").descending());		
 		return new ResponseEntity<>(repository.findAll(pageable).stream()
+													.map(ComentarioDTO::fromEntity)
+													.collect(Collectors.toList()), 
+									HttpStatus.OK);
+	}
+
+
+
+	public ResponseEntity<?> findByImovelId(String imovelId) {
+		Imovel imovel = imovelRepository.findById(imovelId).orElseThrow(() -> new DataNotFoundException("Imovel não encontrado"));
+		
+		return new ResponseEntity<>(imovel.getComentarios().stream()
+													.map(ComentarioDTO::fromEntity)
+													.collect(Collectors.toList()), 
+									HttpStatus.OK);
+	}
+
+
+	public ResponseEntity<?> findByFilterByImovelId(String imovelId, int page, int size) {
+		Imovel imovel = imovelRepository.findById(imovelId).orElseThrow(() -> new DataNotFoundException("Imovel não encontrado"));
+		
+		return new ResponseEntity<>(imovel.getComentarios().stream()
+													.skip(page * size)
+													.limit(size)
 													.map(ComentarioDTO::fromEntity)
 													.collect(Collectors.toList()), 
 									HttpStatus.OK);

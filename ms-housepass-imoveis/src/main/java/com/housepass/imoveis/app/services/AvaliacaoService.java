@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.housepass.imoveis.app.dtos.AvaliacaoDTO;
 import com.housepass.imoveis.app.dtos.ComentarioDTO;
 import com.housepass.imoveis.app.dtos.CreateAvaliacaoDTO;
+import com.housepass.imoveis.app.dtos.VisitanteDTO;
 import com.housepass.imoveis.app.entities.Avaliacao;
 import com.housepass.imoveis.app.entities.Comentario;
 import com.housepass.imoveis.app.entities.Imovel;
@@ -90,6 +91,28 @@ public class AvaliacaoService {
 														.map(AvaliacaoDTO::fromEntity)
 														.collect(Collectors.toList()), 
 										HttpStatus.OK);
+	}
+	
+	
+	public ResponseEntity<?> findByImovelId(String imovelId) {
+		Imovel imovel = imovelRepository.findById(imovelId).orElseThrow(() -> new DataNotFoundException("Imovel não encontrado"));
+		
+		return new ResponseEntity<>(imovel.getAvaliacoes().stream()
+													.map(AvaliacaoDTO::fromEntity)
+													.collect(Collectors.toList()), 
+									HttpStatus.OK);
+	}
+
+
+	public ResponseEntity<?> findByFilterByImovelId(String imovelId, int page, int size) {
+		Imovel imovel = imovelRepository.findById(imovelId).orElseThrow(() -> new DataNotFoundException("Imovel não encontrado"));
+		
+		return new ResponseEntity<>(imovel.getAvaliacoes().stream()
+													.skip(page * size)
+													.limit(size)
+													.map(AvaliacaoDTO::fromEntity)
+													.collect(Collectors.toList()), 
+									HttpStatus.OK);
 	}
 
 }

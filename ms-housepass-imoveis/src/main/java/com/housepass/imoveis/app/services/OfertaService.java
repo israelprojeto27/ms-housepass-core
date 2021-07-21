@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.housepass.imoveis.app.dtos.CreateOfertaDTO;
 import com.housepass.imoveis.app.dtos.OfertaDTO;
+import com.housepass.imoveis.app.dtos.VisitanteDTO;
 import com.housepass.imoveis.app.entities.Imovel;
 import com.housepass.imoveis.app.entities.Oferta;
 import com.housepass.imoveis.app.entities.UserResume;
@@ -79,6 +80,26 @@ public class OfertaService {
 											  .map(OfertaDTO::fromEntity)
 											  .collect(Collectors.toList()), 
 				HttpStatus.OK);
+	}
+
+	public ResponseEntity<?> findByImovelId(String imovelId) {
+		Imovel imovel = imovelRepository.findById(imovelId).orElseThrow(() -> new DataNotFoundException("Imovel não encontrado"));
+		
+		return new ResponseEntity<>(imovel.getOfertas().stream()
+														.map(OfertaDTO::fromEntity)
+														.collect(Collectors.toList()), 
+									HttpStatus.OK);
+	}
+
+	public ResponseEntity<?> findByFilterByImovelId(String imovelId, int page, int size) {
+		Imovel imovel = imovelRepository.findById(imovelId).orElseThrow(() -> new DataNotFoundException("Imovel não encontrado"));
+		
+		return new ResponseEntity<>(imovel.getOfertas().stream()
+														.skip(page * size)
+														.limit(size)
+														.map(OfertaDTO::fromEntity)
+														.collect(Collectors.toList()), 
+									HttpStatus.OK);
 	}
 	
 	

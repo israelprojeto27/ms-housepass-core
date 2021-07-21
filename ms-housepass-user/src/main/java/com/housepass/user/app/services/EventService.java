@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.housepass.user.app.dtos.ConquerDTO;
 import com.housepass.user.app.dtos.CreateEventDTO;
 import com.housepass.user.app.dtos.EventDTO;
 import com.housepass.user.app.dtos.UpdateEventDTO;
@@ -107,6 +108,26 @@ public class EventService {
 													    .map(EventDTO::fromEntity)
 													    .collect(Collectors.toList()),
 										HttpStatus.OK);
+	}
+
+	public ResponseEntity<?> findByUserId(String userId) {
+		User user = userRepository.findById(userId).orElseThrow(() -> new DataNotFoundException("Usuario não encontrado"));		
+		
+		return new ResponseEntity<>(user.getEvents().stream()
+													  .map(EventDTO::fromEntity)
+													  .collect(Collectors.toList()),				
+									HttpStatus.OK);	
+	}
+
+	public ResponseEntity<?> findByFilterByUserId(String userId, int page, int size) {
+		User user = userRepository.findById(userId).orElseThrow(() -> new DataNotFoundException("Usuario não encontrado"));		
+		
+		return new ResponseEntity<>(user.getEvents().stream()
+													  .skip(page * size)
+				  									  .limit(size)
+													  .map(EventDTO::fromEntity)
+													  .collect(Collectors.toList()),				
+									HttpStatus.OK);	
 	} 
 
 }

@@ -55,12 +55,18 @@ public class UserService {
 		CreateUserResumeImovellDTO userResumeImovelDTO = CreateUserResumeImovellDTO.fromEntity(userResume);
 		imovelClient.addUserResume(userResumeImovelDTO);
 		
+		String ret = imovelClient.findUserResume(user.getId()); 
+		if ( ret == null || ( ret != null && ret.equals("N"))) {
+			repository.delete(user);
+			return new ResponseEntity<>("Nao foi possivel finalizar o cadastro usuario", HttpStatus.NOT_ACCEPTABLE);
+		}
+		
 		return new ResponseEntity<>("Usuário criado com sucesso", HttpStatus.CREATED);
 	}
 
-	public UserDTO findById(String userId) {	
-		User user = repository.findById(userId).orElseThrow(() -> new DataNotFoundException("Usuário não encontrado"));
-		return UserDTO.fromEntity(user);
+	public ResponseEntity<?> findById(String userId) {	
+		User user = repository.findById(userId).orElseThrow(() -> new DataNotFoundException("Usuário não encontrado"));		
+		return new ResponseEntity<>(UserDTO.fromEntity(user), HttpStatus.OK);
 	}
 
 	public ResponseEntity<?> findAll() {
@@ -75,9 +81,9 @@ public class UserService {
 		return UserDTO.fromEntity(user);
 	}
 
-	public UserOwnerImovelDTO findByIdOwnerImovel(String userId) {
-		User user = repository.findById(userId).orElseThrow(() -> new DataNotFoundException("Usuário não encontrado"));
-		return UserOwnerImovelDTO.fromEntity(user);
+	public ResponseEntity<?> findByIdOwnerImovel(String userId) {
+		User user = repository.findById(userId).orElseThrow(() -> new DataNotFoundException("Usuário não encontrado"));		
+		return new ResponseEntity<>(UserOwnerImovelDTO.fromEntity(user), HttpStatus.OK);
 	}
 
 	@Transactional
@@ -114,7 +120,7 @@ public class UserService {
 	}
 	
 	@Transactional
-	public ResponseEntity<?> addImovel(String userId, ImovelUserDTO dto) {
+	public String addImovel(String userId, ImovelUserDTO dto) {
 		User user = repository.findById(userId).orElseThrow(() -> new DataNotFoundException("Usuário não encontrado"));	
 		Imovel imovel = ImovelUserDTO.toEntity(dto, userId);
 		
@@ -128,11 +134,11 @@ public class UserService {
 		
 		repository.save(user);
 		
-		return new ResponseEntity<>("Imovel adicionado para a lista de imoveis do usuario", HttpStatus.CREATED);
+		return "OK";
 	}
 
 	@Transactional
-	public ResponseEntity<?> updateImovelUser(String userId, String imovelId, UpdateImovelUserDTO dto) {		
+	public String updateImovelUser(String userId, String imovelId, UpdateImovelUserDTO dto) {		
 		
 		Imovel imovel = imovelRepository.findByUserIdAndImovelId(userId, imovelId);
 		imovel.setTitulo(dto.getTitulo());
@@ -145,7 +151,7 @@ public class UserService {
 		
 		imovelRepository.save(imovel);
 		
-		return new ResponseEntity<>("Informação do imovel atualizada com sucesso", HttpStatus.NO_CONTENT);
+		return "OK";
 	}
 
 	@Transactional
@@ -164,6 +170,45 @@ public class UserService {
 														.map(UserDTO::fromEntity)
 														.collect(Collectors.toList()), 
 										HttpStatus.OK);
+	}
+
+	public String findImovelByImovelIdByUserId(String userId, String imovelId) {
+		Imovel imovel = imovelRepository.findByImovelIdAndUserId(imovelId, userId);
+		if ( imovel != null) {
+			return "S";
+		}
+		else {
+			return "N";
+		}
+		
+	}
+
+	public ResponseEntity<?> findImoveisByUserId(String userId) {
+		User user = repository.findById(userId).orElseThrow(() -> new DataNotFoundException("Usuário não encontrado"));	
+		
+		if (user.getImoveis() != null && !user.getImoveis().isEmpty()) {
+			return new ResponseEntity<>(user.getImoveis().stream()
+														 .map(ImovelUserDTO::fromEntity)
+														 .collect(Collectors.toList()), 
+										HttpStatus.OK);
+		}
+		
+		return new ResponseEntity<>("Nenhum imovel encontrado" , HttpStatus.OK);
+	}
+
+	public ResponseEntity<?> filterImoveisByUserId(String userId, int page, int size) {
+		User user = repository.findById(userId).orElseThrow(() -> new DataNotFoundException("Usuário não encontrado"));	
+		
+		if (user.getImoveis() != null && !user.getImoveis().isEmpty()) {
+			return new ResponseEntity<>(user.getImoveis().stream()
+														 .skip(page * size)
+														 .limit(size)
+														 .map(ImovelUserDTO::fromEntity)
+														 .collect(Collectors.toList()), 
+										HttpStatus.OK);
+		}
+		
+		return new ResponseEntity<>("Nenhum imovel encontrado" , HttpStatus.OK);
 	}
 
 }

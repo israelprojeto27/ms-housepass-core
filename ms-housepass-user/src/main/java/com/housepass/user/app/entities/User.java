@@ -2,6 +2,7 @@ package com.housepass.user.app.entities;
 
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
@@ -43,29 +44,37 @@ public class User {
 	private long quantImoveis;
 	private long quantPublications;
 	
-	@DBRef(lazy = true)
-	private List<ConnectionUser> connections;
+	@DBRef
+	private Configuration configuration;	
 	
 	
 	@DBRef(lazy = true)
-	private List<Event> events;
+	private List<ConnectionUser> connections = new ArrayList<ConnectionUser>();
 	
 	
 	@DBRef(lazy = true)
-	private List<Recommendation> recommendations;
+	private List<Event> events = new ArrayList<Event>();
 	
 	
 	@DBRef(lazy = true)
-	private List<Evaluation> evaluations;
+	private List<Recommendation> recommendations = new ArrayList<Recommendation>();
 	
 	
 	@DBRef(lazy = true)
-	private List<Conquer> conquers;
+	private List<Evaluation> evaluations = new ArrayList<Evaluation>();
+	
 	
 	@DBRef(lazy = true)
-	private List<Imovel> imoveis;
+	private List<Conquer> conquers = new ArrayList<Conquer>();
+	
+	
 	
 	@DBRef(lazy = true)
-	private List<Invite> invites;	
+	private List<Imovel> imoveis = new ArrayList<Imovel>();
+	
+	
+	
+	@DBRef(lazy = true)
+	private List<Invite> invites = new ArrayList<Invite>();	
 	
 }

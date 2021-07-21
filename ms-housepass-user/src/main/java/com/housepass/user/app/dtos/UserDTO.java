@@ -39,6 +39,8 @@ public class UserDTO {
 	private List<ConquerDTO> conquers;
 	private List<InviteDTO> invites;
 	
+	private ConfigurationDTO configuration;
+	
 	
 	public static UserDTO fromEntity(User user) {
 		return UserDTO.builder()			
@@ -55,6 +57,7 @@ public class UserDTO {
 				.quantConnections(user.getQuantConnections())
 				.quantImoveis(user.getQuantImoveis())
 				.quantPublications(user.getQuantPublications())
+				.configuration(ConfigurationDTO.fromEntity(user.getConfiguration()))
 				.connections(user.getConnections() != null && !user.getConnections().isEmpty() ? user.getConnections().stream().map(ConnectionUserDTO::fromEntity).collect(Collectors.toList()) : null)
 				.events(user.getEvents() != null && !user.getEvents().isEmpty() ? user.getEvents().stream().map(EventDTO::fromEntity).collect(Collectors.toList()) : null)
 				.recommendations(user.getRecommendations() != null && !user.getRecommendations().isEmpty() ? user.getRecommendations().stream().map(RecommendationDTO::fromEntity).collect(Collectors.toList()) : null)
