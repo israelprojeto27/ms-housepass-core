@@ -1,4 +1,4 @@
-package com.housepass.user.app.enums;
+package com.housepass.notification.app.enums;
 
 public enum StatusEnum {
 

@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.housepass.user.app.dtos.ChangePasswordUserDTO;
 import com.housepass.user.app.dtos.CreateUserDTO;
 import com.housepass.user.app.dtos.CreateUserResumeImovellDTO;
+import com.housepass.user.app.dtos.CreateUserResumeNotificationlDTO;
 import com.housepass.user.app.dtos.ImovelUserDTO;
 import com.housepass.user.app.dtos.UpdateImovelUserDTO;
 import com.housepass.user.app.dtos.UpdateUserDTO;
@@ -25,6 +26,7 @@ import com.housepass.user.app.entities.User;
 import com.housepass.user.app.entities.UserResume;
 import com.housepass.user.app.exceptions.DataNotFoundException;
 import com.housepass.user.app.feignClient.ImovelClient;
+import com.housepass.user.app.feignClient.NotificationClient;
 import com.housepass.user.app.repositories.ImovelRepository;
 import com.housepass.user.app.repositories.UserRepository;
 import com.housepass.user.app.repositories.UserResumeRepository;
@@ -43,6 +45,9 @@ public class UserService {
 	
 	@Autowired
 	private ImovelClient imovelClient;
+	
+	@Autowired
+	private NotificationClient notificationClient;
 
 	@Transactional
 	public ResponseEntity<?> create(CreateUserDTO dto) {	
@@ -59,6 +64,14 @@ public class UserService {
 		if ( ret == null || ( ret != null && ret.equals("N"))) {
 			repository.delete(user);
 			return new ResponseEntity<>("Nao foi possivel finalizar o cadastro usuario", HttpStatus.NOT_ACCEPTABLE);
+		}
+		
+		CreateUserResumeNotificationlDTO userResumeNotificationDTO = CreateUserResumeNotificationlDTO.fromEntity(userResume); 
+		notificationClient.addUserResume(userResumeNotificationDTO);
+		String ret2 = notificationClient.findUserResume(userResume.getUserId()); 
+		if ( ret2 == null || ( ret2 != null && ret2.equals("N"))) {
+			repository.delete(user);
+			return new ResponseEntity<>("Nao foi possivel finalizar o cadastro usuario - notification", HttpStatus.NOT_ACCEPTABLE);
 		}
 		
 		return new ResponseEntity<>("Usuário criado com sucesso", HttpStatus.CREATED);

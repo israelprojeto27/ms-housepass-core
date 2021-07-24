@@ -57,7 +57,7 @@ public class UserDTO {
 				.quantConnections(user.getQuantConnections())
 				.quantImoveis(user.getQuantImoveis())
 				.quantPublications(user.getQuantPublications())
-				.configuration(ConfigurationDTO.fromEntity(user.getConfiguration()))
+				.configuration(user.getConfiguration() != null ? ConfigurationDTO.fromEntity(user.getConfiguration()) : null)
 				.connections(user.getConnections() != null && !user.getConnections().isEmpty() ? user.getConnections().stream().map(ConnectionUserDTO::fromEntity).collect(Collectors.toList()) : null)
 				.events(user.getEvents() != null && !user.getEvents().isEmpty() ? user.getEvents().stream().map(EventDTO::fromEntity).collect(Collectors.toList()) : null)
 				.recommendations(user.getRecommendations() != null && !user.getRecommendations().isEmpty() ? user.getRecommendations().stream().map(RecommendationDTO::fromEntity).collect(Collectors.toList()) : null)
