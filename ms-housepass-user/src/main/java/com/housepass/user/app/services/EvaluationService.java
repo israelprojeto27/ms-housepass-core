@@ -15,11 +15,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.housepass.user.app.dtos.ConquerDTO;
 import com.housepass.user.app.dtos.CreateEvaluationUserDTO;
+import com.housepass.user.app.dtos.CreateNotificationDTO;
 import com.housepass.user.app.dtos.EvaluationDTO;
 import com.housepass.user.app.entities.Evaluation;
 import com.housepass.user.app.entities.User;
 import com.housepass.user.app.entities.UserResume;
+import com.housepass.user.app.enums.NotificationType;
 import com.housepass.user.app.exceptions.DataNotFoundException;
+import com.housepass.user.app.feignClient.NotificationClient;
 import com.housepass.user.app.repositories.EvaluationRepository;
 import com.housepass.user.app.repositories.UserRepository;
 import com.housepass.user.app.repositories.UserResumeRepository;
@@ -36,6 +39,11 @@ public class EvaluationService {
 	@Autowired
 	private UserResumeRepository userResumeRepository;
 
+	
+	@Autowired
+	private NotificationClient notificationClient;
+	
+	
 	@Transactional
 	public ResponseEntity<?> create( CreateEvaluationUserDTO dto) {
 		
@@ -53,6 +61,13 @@ public class EvaluationService {
 			userReceiveEvaluation.setEvaluations(Arrays.asList(eval));
 		}		
 		userRepository.save(userReceiveEvaluation);
+		
+		CreateNotificationDTO createNotificationDTO = new CreateNotificationDTO();
+		createNotificationDTO.setDescription("Uma nova avaliação foi enviada pelo usuario: " + userResumeEvaluator.getUserName());
+		createNotificationDTO.setType(NotificationType.EVALUATION_USER);
+		createNotificationDTO.setUserId(userReceiveEvaluation.getId());
+		createNotificationDTO.setUserSendId(userResumeEvaluator.getUserId());
+		notificationClient.addNotification(createNotificationDTO);
 		
 		return new ResponseEntity<>("Avaliação foi enviada para o usuário com sucesso", HttpStatus.CREATED);
 	}

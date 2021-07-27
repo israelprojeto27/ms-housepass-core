@@ -26,7 +26,7 @@ import com.housepass.user.app.entities.User;
 import com.housepass.user.app.entities.UserResume;
 import com.housepass.user.app.exceptions.DataNotFoundException;
 import com.housepass.user.app.feignClient.ImovelClient;
-import com.housepass.user.app.feignClient.NotificationClient;
+import com.housepass.user.app.feignClient.NotificationUserResumeClient;
 import com.housepass.user.app.repositories.ImovelRepository;
 import com.housepass.user.app.repositories.UserRepository;
 import com.housepass.user.app.repositories.UserResumeRepository;
@@ -47,7 +47,11 @@ public class UserService {
 	private ImovelClient imovelClient;
 	
 	@Autowired
-	private NotificationClient notificationClient;
+	private NotificationUserResumeClient notificationClient;
+	
+	
+	@Autowired
+	private ConfigurationService configurationService;
 
 	@Transactional
 	public ResponseEntity<?> create(CreateUserDTO dto) {	
@@ -73,6 +77,8 @@ public class UserService {
 			repository.delete(user);
 			return new ResponseEntity<>("Nao foi possivel finalizar o cadastro usuario - notification", HttpStatus.NOT_ACCEPTABLE);
 		}
+		
+		configurationService.create(user.getId());
 		
 		return new ResponseEntity<>("Usuário criado com sucesso", HttpStatus.CREATED);
 	}

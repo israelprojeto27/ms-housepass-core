@@ -15,14 +15,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.housepass.user.app.dtos.ConquerDTO;
+import com.housepass.user.app.dtos.CreateNotificationDTO;
 import com.housepass.user.app.dtos.CreateRecomendationUserDTO;
 import com.housepass.user.app.dtos.RecommendationDTO;
 import com.housepass.user.app.dtos.UpdateStatusRecomendationUserDTO;
 import com.housepass.user.app.entities.Recommendation;
 import com.housepass.user.app.entities.User;
 import com.housepass.user.app.entities.UserResume;
+import com.housepass.user.app.enums.NotificationType;
 import com.housepass.user.app.enums.StatusEnum;
 import com.housepass.user.app.exceptions.DataNotFoundException;
+import com.housepass.user.app.feignClient.NotificationClient;
 import com.housepass.user.app.repositories.RecommendationRepository;
 import com.housepass.user.app.repositories.UserRepository;
 import com.housepass.user.app.repositories.UserResumeRepository;
@@ -38,6 +41,9 @@ public class RecommendationService {
 	
 	@Autowired
 	private UserResumeRepository userResumeRepository;
+	
+	@Autowired
+	private NotificationClient notificationClient;
 
 	
 	@Transactional
@@ -57,6 +63,13 @@ public class RecommendationService {
 			userReceiveRecommendation.setRecommendations(Arrays.asList(recommendation));
 		}
 		userRepository.save(userReceiveRecommendation);
+		
+		CreateNotificationDTO createNotificationDTO = new CreateNotificationDTO();
+		createNotificationDTO.setDescription("Uma nova recomendação foi enviada pelo usuario: " + userResumeSendRecommendation.getUserName());
+		createNotificationDTO.setType(NotificationType.RECOMMENDATION_USER);
+		createNotificationDTO.setUserId(userReceiveRecommendation.getId());
+		createNotificationDTO.setUserSendId(userResumeSendRecommendation.getUserId());
+		notificationClient.addNotification(createNotificationDTO);
 		
 		return new ResponseEntity<>("Recomendação enviada para o usuário foi enviada com sucesso", HttpStatus.CREATED);
 	}

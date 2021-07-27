@@ -29,7 +29,7 @@ public class NotificationService {
 	
 
 	@Transactional
-	public ResponseEntity<?> create(CreateNotificationDTO dto) {
+	public String create(CreateNotificationDTO dto) {
 		
 		Notification notification = CreateNotificationDTO.toEntity(dto);
 		UserResume userResume = userResumeRepository.findByUserId(dto.getUserId());
@@ -41,7 +41,7 @@ public class NotificationService {
 		userResume.getNotifications().add(notification);
 		userResumeRepository.save(userResume);
 		
-		return new ResponseEntity<>("Notificação criada com sucesso", HttpStatus.CREATED);
+		return "created";
 	}
 
 

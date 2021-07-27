@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.housepass.user.app.dtos.ConquerDTO;
 import com.housepass.user.app.dtos.CreateInviteDTO;
+import com.housepass.user.app.dtos.CreateNotificationDTO;
 import com.housepass.user.app.dtos.InviteDTO;
 import com.housepass.user.app.dtos.RecommendationDTO;
 import com.housepass.user.app.dtos.UpdateStatusInviterDTO;
@@ -22,8 +23,10 @@ import com.housepass.user.app.entities.ConnectionUser;
 import com.housepass.user.app.entities.Invite;
 import com.housepass.user.app.entities.User;
 import com.housepass.user.app.entities.UserResume;
+import com.housepass.user.app.enums.NotificationType;
 import com.housepass.user.app.enums.StatusEnum;
 import com.housepass.user.app.exceptions.DataNotFoundException;
+import com.housepass.user.app.feignClient.NotificationClient;
 import com.housepass.user.app.repositories.ConnectionUserRepository;
 import com.housepass.user.app.repositories.InviteRepository;
 import com.housepass.user.app.repositories.UserRepository;
@@ -43,6 +46,10 @@ public class InviteService {
 	
 	@Autowired
 	private ConnectionUserRepository connectionUserRepository;
+	
+	
+	@Autowired
+	private NotificationClient notificationClient;
 
 	@Transactional
 	public ResponseEntity<?> create(CreateInviteDTO dto) {
@@ -61,6 +68,13 @@ public class InviteService {
 			userReceiveInvite.setInvites(Arrays.asList(invite));
 		}		
 		userRepository.save(userReceiveInvite);
+		
+		CreateNotificationDTO createNotificationDTO = new CreateNotificationDTO();
+		createNotificationDTO.setDescription("Um novo convite foi enviado pelo usuario: " + userSendInvite.getUserName());
+		createNotificationDTO.setType(NotificationType.INVITE);
+		createNotificationDTO.setUserId(userReceiveInvite.getId());
+		createNotificationDTO.setUserSendId(userSendInvite.getUserId());
+		notificationClient.addNotification(createNotificationDTO);
 		
 		return new ResponseEntity<>("Convite foi enviado para o usuário com sucesso", HttpStatus.CREATED);
 	}
@@ -112,6 +126,13 @@ public class InviteService {
 			invite.setStatusInvite(StatusEnum.ACCEPTED);
 			invite.setUpdatedDate(LocalDateTime.now());
 			repository.save(invite);
+			
+			CreateNotificationDTO createNotificationDTO = new CreateNotificationDTO();
+			createNotificationDTO.setDescription("O seu convite foi aceito pelo usuario: " + userRceiveInvite.getName());
+			createNotificationDTO.setType(NotificationType.ACCEPTED_INVITE);
+			createNotificationDTO.setUserId(userSendInvite.getId());
+			createNotificationDTO.setUserSendId(userRceiveInvite.getId());
+			notificationClient.addNotification(createNotificationDTO); 
 			
 		}
 		else if (dto.getStatusInvite().equals(StatusEnum.REJECTED)) {
