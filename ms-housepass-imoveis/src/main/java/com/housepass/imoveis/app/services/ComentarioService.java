@@ -12,14 +12,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.housepass.imoveis.app.dtos.ComentarioDTO;
 import com.housepass.imoveis.app.dtos.CreateComentarioDTO;
+import com.housepass.imoveis.app.dtos.CreateNotificationDTO;
 import com.housepass.imoveis.app.dtos.VisitanteDTO;
 import com.housepass.imoveis.app.entities.Comentario;
 import com.housepass.imoveis.app.entities.Imovel;
 import com.housepass.imoveis.app.entities.UserResume;
+import com.housepass.imoveis.app.enums.NotificationType;
 import com.housepass.imoveis.app.exceptions.DataNotFoundException;
+import com.housepass.imoveis.app.feignclients.NotificationClient;
 import com.housepass.imoveis.app.repositories.ComentarioRepository;
 import com.housepass.imoveis.app.repositories.ImovelRepository;
 import com.housepass.imoveis.app.repositories.UserResumeRepository;
+
 
 @Service
 public class ComentarioService {
@@ -32,6 +36,9 @@ public class ComentarioService {
 	
 	@Autowired
 	private UserResumeRepository userResumeRepository;
+	
+	@Autowired
+	private NotificationClient notificationClient;
 	
 	
 	
@@ -47,6 +54,14 @@ public class ComentarioService {
 		
 		imovel.getComentarios().add(comentario);
 		imovelRepository.save(imovel);
+		
+		CreateNotificationDTO createNotificationDTO = new CreateNotificationDTO();
+		createNotificationDTO.setDescription("Um novo comentário sobre o seu imóvel: " + imovel.getTitulo());
+		createNotificationDTO.setType(NotificationType.COMMENTS);
+		createNotificationDTO.setUserId(imovel.getUserOwner().getUserId());
+		createNotificationDTO.setUserSendId(userResume.getUserId());
+		createNotificationDTO.setImovelId(imovel.getId());
+		notificationClient.addNotification(createNotificationDTO);
 		
 		return new ResponseEntity<>("Comentario foi adicionada com sucesso", HttpStatus.CREATED);
 	}

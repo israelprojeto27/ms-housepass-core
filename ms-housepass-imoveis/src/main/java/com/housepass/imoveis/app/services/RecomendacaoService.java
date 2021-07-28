@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.housepass.imoveis.app.dtos.ComentarioDTO;
+import com.housepass.imoveis.app.dtos.CreateNotificationDTO;
 import com.housepass.imoveis.app.dtos.CreateRecomendacaoDTO;
 import com.housepass.imoveis.app.dtos.RecomendacaoDTO;
 import com.housepass.imoveis.app.dtos.VisitanteDTO;
@@ -18,7 +19,9 @@ import com.housepass.imoveis.app.entities.Comentario;
 import com.housepass.imoveis.app.entities.Imovel;
 import com.housepass.imoveis.app.entities.Recomendacao;
 import com.housepass.imoveis.app.entities.UserResume;
+import com.housepass.imoveis.app.enums.NotificationType;
 import com.housepass.imoveis.app.exceptions.DataNotFoundException;
+import com.housepass.imoveis.app.feignclients.NotificationClient;
 import com.housepass.imoveis.app.repositories.ImovelRepository;
 import com.housepass.imoveis.app.repositories.RecomendacaoRepository;
 import com.housepass.imoveis.app.repositories.UserResumeRepository;
@@ -36,6 +39,9 @@ public class RecomendacaoService {
 	private UserResumeRepository userResumeRepository;
 	
 	
+	@Autowired
+	private NotificationClient notificationClient;	
+	
 	
 	@Transactional
 	public ResponseEntity<?> create(CreateRecomendacaoDTO dto) {
@@ -49,6 +55,14 @@ public class RecomendacaoService {
 		
 		imovel.getRecomendacoes().add(recomendacao);
 		imovelRepository.save(imovel);
+		
+		CreateNotificationDTO createNotificationDTO = new CreateNotificationDTO();
+		createNotificationDTO.setDescription("Uma nova recomendação foi feita sobre o seu imóvel: " + imovel.getTitulo());
+		createNotificationDTO.setType(NotificationType.RECOMMENDATION_IMOVEL);
+		createNotificationDTO.setUserId(imovel.getUserOwner().getUserId());
+		createNotificationDTO.setUserSendId(userResume.getUserId());
+		createNotificationDTO.setImovelId(imovel.getId());
+		notificationClient.addNotification(createNotificationDTO);
 		
 		return new ResponseEntity<>("Recomendação foi adicionada com sucesso", HttpStatus.CREATED);
 	}

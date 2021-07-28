@@ -13,12 +13,15 @@ import org.springframework.transaction.annotation.Transactional;
 import com.housepass.imoveis.app.dtos.AvaliacaoDTO;
 import com.housepass.imoveis.app.dtos.ComentarioDTO;
 import com.housepass.imoveis.app.dtos.CreateAvaliacaoDTO;
+import com.housepass.imoveis.app.dtos.CreateNotificationDTO;
 import com.housepass.imoveis.app.dtos.VisitanteDTO;
 import com.housepass.imoveis.app.entities.Avaliacao;
 import com.housepass.imoveis.app.entities.Comentario;
 import com.housepass.imoveis.app.entities.Imovel;
 import com.housepass.imoveis.app.entities.UserResume;
+import com.housepass.imoveis.app.enums.NotificationType;
 import com.housepass.imoveis.app.exceptions.DataNotFoundException;
+import com.housepass.imoveis.app.feignclients.NotificationClient;
 import com.housepass.imoveis.app.repositories.AvaliacaoRepository;
 import com.housepass.imoveis.app.repositories.ImovelRepository;
 import com.housepass.imoveis.app.repositories.UserResumeRepository;
@@ -35,6 +38,8 @@ public class AvaliacaoService {
 	@Autowired
 	private UserResumeRepository userResumeRepository;
 	
+	@Autowired
+	private NotificationClient notificationClient;
 	
 
 	@Transactional
@@ -49,6 +54,14 @@ public class AvaliacaoService {
 		
 		imovel.getAvaliacoes().add(avaliacao);		
 		imovelRepository.save(imovel);
+		
+		CreateNotificationDTO createNotificationDTO = new CreateNotificationDTO();
+		createNotificationDTO.setDescription("Um nova avaliação foi feito sobre o seu imóvel: " + imovel.getTitulo());
+		createNotificationDTO.setType(NotificationType.EVALUATION_IMOVEL);
+		createNotificationDTO.setUserId(imovel.getUserOwner().getUserId());
+		createNotificationDTO.setUserSendId(userResume.getUserId());
+		createNotificationDTO.setImovelId(imovel.getId());
+		notificationClient.addNotification(createNotificationDTO);
 		
 		return new ResponseEntity<>("Avaliação foi adicionada com sucesso", HttpStatus.CREATED);
 	}
