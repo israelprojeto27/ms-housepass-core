@@ -18,12 +18,14 @@ import com.housepass.user.app.dtos.CreateUserResumeImovellDTO;
 import com.housepass.user.app.dtos.CreateUserResumeNotificationlDTO;
 import com.housepass.user.app.dtos.ImovelUserDTO;
 import com.housepass.user.app.dtos.UpdateImovelUserDTO;
+import com.housepass.user.app.dtos.UpdateQuantImovelUserDTO;
 import com.housepass.user.app.dtos.UpdateUserDTO;
 import com.housepass.user.app.dtos.UserDTO;
 import com.housepass.user.app.dtos.UserOwnerImovelDTO;
 import com.housepass.user.app.entities.Imovel;
 import com.housepass.user.app.entities.User;
 import com.housepass.user.app.entities.UserResume;
+import com.housepass.user.app.enums.TypeQuantImovel;
 import com.housepass.user.app.exceptions.DataNotFoundException;
 import com.housepass.user.app.feignClient.ImovelClient;
 import com.housepass.user.app.feignClient.NotificationClient;
@@ -231,6 +233,33 @@ public class UserService {
 		}
 		
 		return new ResponseEntity<>("Nenhum imovel encontrado" , HttpStatus.OK);
+	}
+
+	@Transactional
+	public String updateQuantImovel(String userId, String imovelId, UpdateQuantImovelUserDTO dto) {
+		Imovel imovel = imovelRepository.findByUserIdAndImovelId(userId, imovelId);	
+		
+		if (TypeQuantImovel.LIKE.equals(dto.getTypeQuant())) {
+			imovel.setQuantLikes(imovel.getQuantLikes() + 1);
+		}
+		else if (TypeQuantImovel.COMMENT.equals(dto.getTypeQuant())) {
+			imovel.setQuantComments(imovel.getQuantComments() + 1);
+		}
+		else if (TypeQuantImovel.VISITOR.equals(dto.getTypeQuant())) {
+			imovel.setQuantViews(imovel.getQuantViews() + 1);
+		}
+		else if (TypeQuantImovel.OFFER.equals(dto.getTypeQuant())) {
+			imovel.setQuantOffers(imovel.getQuantOffers() + 1);
+		}
+		else if (TypeQuantImovel.EVALUATION.equals(dto.getTypeQuant())) {
+			imovel.setQuantEvaluations(imovel.getQuantEvaluations() + 1);
+		}
+		else if (TypeQuantImovel.RECOMMENDATION.equals(dto.getTypeQuant())) {
+			imovel.setQuantRecommendations(imovel.getQuantRecommendations() + 1);
+		}
+		
+		imovelRepository.save(imovel);
+		return "ok";
 	}
 
 }

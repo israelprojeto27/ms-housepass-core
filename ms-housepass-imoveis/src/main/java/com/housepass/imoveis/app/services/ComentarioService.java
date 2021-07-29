@@ -13,13 +13,16 @@ import org.springframework.transaction.annotation.Transactional;
 import com.housepass.imoveis.app.dtos.ComentarioDTO;
 import com.housepass.imoveis.app.dtos.CreateComentarioDTO;
 import com.housepass.imoveis.app.dtos.CreateNotificationDTO;
+import com.housepass.imoveis.app.dtos.UpdateQuantImovelUserDTO;
 import com.housepass.imoveis.app.dtos.VisitanteDTO;
 import com.housepass.imoveis.app.entities.Comentario;
 import com.housepass.imoveis.app.entities.Imovel;
 import com.housepass.imoveis.app.entities.UserResume;
 import com.housepass.imoveis.app.enums.NotificationType;
+import com.housepass.imoveis.app.enums.TypeQuantImovel;
 import com.housepass.imoveis.app.exceptions.DataNotFoundException;
 import com.housepass.imoveis.app.feignclients.NotificationClient;
+import com.housepass.imoveis.app.feignclients.UserClient;
 import com.housepass.imoveis.app.repositories.ComentarioRepository;
 import com.housepass.imoveis.app.repositories.ImovelRepository;
 import com.housepass.imoveis.app.repositories.UserResumeRepository;
@@ -40,7 +43,8 @@ public class ComentarioService {
 	@Autowired
 	private NotificationClient notificationClient;
 	
-	
+	@Autowired
+	private UserClient userClient;
 	
 	@Transactional
 	public ResponseEntity<?> create(CreateComentarioDTO dto) {
@@ -53,6 +57,7 @@ public class ComentarioService {
 		repository.insert(comentario);
 		
 		imovel.getComentarios().add(comentario);
+		imovel.setQuantComments(imovel.getQuantComments() + 1);
 		imovelRepository.save(imovel);
 		
 		CreateNotificationDTO createNotificationDTO = new CreateNotificationDTO();
@@ -62,6 +67,9 @@ public class ComentarioService {
 		createNotificationDTO.setUserSendId(userResume.getUserId());
 		createNotificationDTO.setImovelId(imovel.getId());
 		notificationClient.addNotification(createNotificationDTO);
+		
+		UpdateQuantImovelUserDTO updateQuantImovelUserDTO = new UpdateQuantImovelUserDTO(TypeQuantImovel.COMMENT);
+		userClient.updateQuantImovel(imovel.getUserOwner().getUserId(), imovel.getId(), updateQuantImovelUserDTO);
 		
 		return new ResponseEntity<>("Comentario foi adicionada com sucesso", HttpStatus.CREATED);
 	}

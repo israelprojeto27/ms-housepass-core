@@ -14,14 +14,17 @@ import com.housepass.imoveis.app.dtos.ComentarioDTO;
 import com.housepass.imoveis.app.dtos.CreateNotificationDTO;
 import com.housepass.imoveis.app.dtos.CreateRecomendacaoDTO;
 import com.housepass.imoveis.app.dtos.RecomendacaoDTO;
+import com.housepass.imoveis.app.dtos.UpdateQuantImovelUserDTO;
 import com.housepass.imoveis.app.dtos.VisitanteDTO;
 import com.housepass.imoveis.app.entities.Comentario;
 import com.housepass.imoveis.app.entities.Imovel;
 import com.housepass.imoveis.app.entities.Recomendacao;
 import com.housepass.imoveis.app.entities.UserResume;
 import com.housepass.imoveis.app.enums.NotificationType;
+import com.housepass.imoveis.app.enums.TypeQuantImovel;
 import com.housepass.imoveis.app.exceptions.DataNotFoundException;
 import com.housepass.imoveis.app.feignclients.NotificationClient;
+import com.housepass.imoveis.app.feignclients.UserClient;
 import com.housepass.imoveis.app.repositories.ImovelRepository;
 import com.housepass.imoveis.app.repositories.RecomendacaoRepository;
 import com.housepass.imoveis.app.repositories.UserResumeRepository;
@@ -41,6 +44,9 @@ public class RecomendacaoService {
 	
 	@Autowired
 	private NotificationClient notificationClient;	
+	
+	@Autowired
+	private UserClient userClient;
 	
 	
 	@Transactional
@@ -63,6 +69,9 @@ public class RecomendacaoService {
 		createNotificationDTO.setUserSendId(userResume.getUserId());
 		createNotificationDTO.setImovelId(imovel.getId());
 		notificationClient.addNotification(createNotificationDTO);
+		
+		UpdateQuantImovelUserDTO updateQuantImovelUserDTO = new UpdateQuantImovelUserDTO(TypeQuantImovel.RECOMMENDATION);
+		userClient.updateQuantImovel(imovel.getUserOwner().getUserId(), imovel.getId(), updateQuantImovelUserDTO);
 		
 		return new ResponseEntity<>("Recomendação foi adicionada com sucesso", HttpStatus.CREATED);
 	}

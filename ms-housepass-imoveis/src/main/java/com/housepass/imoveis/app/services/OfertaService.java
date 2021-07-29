@@ -12,11 +12,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.housepass.imoveis.app.dtos.CreateOfertaDTO;
 import com.housepass.imoveis.app.dtos.OfertaDTO;
+import com.housepass.imoveis.app.dtos.UpdateQuantImovelUserDTO;
 import com.housepass.imoveis.app.dtos.VisitanteDTO;
 import com.housepass.imoveis.app.entities.Imovel;
 import com.housepass.imoveis.app.entities.Oferta;
 import com.housepass.imoveis.app.entities.UserResume;
+import com.housepass.imoveis.app.enums.TypeQuantImovel;
 import com.housepass.imoveis.app.exceptions.DataNotFoundException;
+import com.housepass.imoveis.app.feignclients.UserClient;
 import com.housepass.imoveis.app.repositories.ImovelRepository;
 import com.housepass.imoveis.app.repositories.OfertaRepository;
 import com.housepass.imoveis.app.repositories.UserResumeRepository;
@@ -32,6 +35,10 @@ public class OfertaService {
 	
 	@Autowired
 	private UserResumeRepository userResumeRepository;
+	
+
+	@Autowired
+	private UserClient userClient;
 
 	@Transactional
 	public ResponseEntity<?> create(CreateOfertaDTO dto) {
@@ -45,6 +52,9 @@ public class OfertaService {
 		
 		imovel.getOfertas().add(oferta);
 		imovelRepository.save(imovel);		
+		
+		UpdateQuantImovelUserDTO updateQuantImovelUserDTO = new UpdateQuantImovelUserDTO(TypeQuantImovel.OFFER);
+		userClient.updateQuantImovel(imovel.getUserOwner().getUserId(), imovel.getId(), updateQuantImovelUserDTO);
 		
 		return new ResponseEntity<>("Oferta foi adicionada com sucesso", HttpStatus.CREATED);
 	}

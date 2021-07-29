@@ -31,6 +31,9 @@ public class Imovel {
 	private long quantViews;
 	private long quantShares;
 	private long quantComments;
+	private long quantEvaluations;
+	private long quantRecommendations;
+	private long quantOffers;
 	
 
 }

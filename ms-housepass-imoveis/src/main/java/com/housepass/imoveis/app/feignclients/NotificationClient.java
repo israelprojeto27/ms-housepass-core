@@ -12,6 +12,6 @@ import com.housepass.imoveis.app.dtos.CreateNotificationDTO;
 @FeignClient(name = "ms-housepass-notification",  path="/notification")
 public interface NotificationClient {
 
-	@PostMapping
+	@PostMapping("/addNotification")
 	String addNotification(@RequestBody CreateNotificationDTO dto);
 }

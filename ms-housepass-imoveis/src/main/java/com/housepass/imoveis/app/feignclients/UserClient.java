@@ -11,9 +11,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.housepass.imoveis.app.dtos.ImovelUserDTO;
 import com.housepass.imoveis.app.dtos.UpdateImovelDTO;
+import com.housepass.imoveis.app.dtos.UpdateQuantImovelUserDTO;
 import com.housepass.imoveis.app.dtos.UserOwnerDTO;
-
-import io.swagger.annotations.ApiOperation;
 
 @Component
 @FeignClient(name = "ms-housepass-user",  path="/user")
@@ -37,6 +36,14 @@ public interface UserClient {
 	 @GetMapping("/findImovelByUserByImovel/{userId}/{imovelId}")
 	 String findImovelByImovelIdByUserId(@PathVariable String  userId,
 											  		   @PathVariable String  imovelId);
+	 
+	 
+	 
+	 
+	@PostMapping("/updateQuantImovel/{userId}/{imovelId}")
+	public @ResponseBody String updateQuantImovel(@PathVariable String  userId,
+											      @PathVariable String  imovelId,
+									  	          @RequestBody UpdateQuantImovelUserDTO dto);
 	
 	
 

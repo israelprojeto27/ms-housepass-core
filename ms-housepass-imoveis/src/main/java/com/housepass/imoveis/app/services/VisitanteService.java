@@ -16,14 +16,17 @@ import org.springframework.transaction.annotation.Transactional;
 import com.housepass.imoveis.app.dtos.ComentarioDTO;
 import com.housepass.imoveis.app.dtos.CreateNotificationDTO;
 import com.housepass.imoveis.app.dtos.CreateVisitanteDTO;
+import com.housepass.imoveis.app.dtos.UpdateQuantImovelUserDTO;
 import com.housepass.imoveis.app.dtos.VisitanteDTO;
 import com.housepass.imoveis.app.entities.Comentario;
 import com.housepass.imoveis.app.entities.Imovel;
 import com.housepass.imoveis.app.entities.UserResume;
 import com.housepass.imoveis.app.entities.Visitante;
 import com.housepass.imoveis.app.enums.NotificationType;
+import com.housepass.imoveis.app.enums.TypeQuantImovel;
 import com.housepass.imoveis.app.exceptions.DataNotFoundException;
 import com.housepass.imoveis.app.feignclients.NotificationClient;
+import com.housepass.imoveis.app.feignclients.UserClient;
 import com.housepass.imoveis.app.repositories.ImovelRepository;
 import com.housepass.imoveis.app.repositories.UserResumeRepository;
 import com.housepass.imoveis.app.repositories.VisitanteRepository;
@@ -43,6 +46,9 @@ public class VisitanteService {
 	
 	@Autowired
 	private NotificationClient notificationClient;
+	
+	@Autowired
+	private UserClient userClient;
 	
 		
 	@Transactional
@@ -65,6 +71,9 @@ public class VisitanteService {
 		createNotificationDTO.setUserSendId(userResume.getUserId());
 		createNotificationDTO.setImovelId(imovel.getId());
 		notificationClient.addNotification(createNotificationDTO);
+		
+		UpdateQuantImovelUserDTO updateQuantImovelUserDTO = new UpdateQuantImovelUserDTO(TypeQuantImovel.VISITOR);
+		userClient.updateQuantImovel(imovel.getUserOwner().getUserId(), imovel.getId(), updateQuantImovelUserDTO);
 		
 		return new ResponseEntity<>("Visitante foi adicionada com sucesso", HttpStatus.CREATED);
 	}

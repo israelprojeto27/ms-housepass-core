@@ -26,6 +26,9 @@ public class ImovelUserDTO {
 	private long quantViews;
 	private long quantShares;
 	private long quantComments;
+	private long quantOffers;
+	private long quantRecommendations;
+	private long quantEvaluations;
 	
 	public static Imovel toEntity(ImovelUserDTO dto, String userId) {
 		return Imovel.builder()
@@ -39,6 +42,9 @@ public class ImovelUserDTO {
 				.quantViews(0l)
 				.quantShares(0l)
 				.quantComments(0l)
+				.quantOffers(0l)
+				.quantRecommendations(0l)
+				.quantEvaluations(0l)
 				.build();
 	}
 	
@@ -54,6 +60,9 @@ public class ImovelUserDTO {
 				.quantViews(imovel.getQuantViews())
 				.quantShares(imovel.getQuantShares())
 				.quantComments(imovel.getQuantComments())
+				.quantOffers(imovel.getQuantOffers())
+				.quantRecommendations(imovel.getQuantRecommendations())
+				.quantEvaluations(imovel.getQuantEvaluations())
 				.build();
 	}
 

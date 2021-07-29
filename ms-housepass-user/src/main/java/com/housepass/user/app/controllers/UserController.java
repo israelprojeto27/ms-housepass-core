@@ -18,6 +18,7 @@ import com.housepass.user.app.dtos.ChangePasswordUserDTO;
 import com.housepass.user.app.dtos.CreateUserDTO;
 import com.housepass.user.app.dtos.ImovelUserDTO;
 import com.housepass.user.app.dtos.UpdateImovelUserDTO;
+import com.housepass.user.app.dtos.UpdateQuantImovelUserDTO;
 import com.housepass.user.app.dtos.UpdateUserDTO;
 import com.housepass.user.app.services.UserService;
 
@@ -101,9 +102,18 @@ public class UserController {
 	@ApiOperation(value = "Atualizar informações do imovel da lista de imoveis do usuario")
 	@PostMapping("/updateImovel/{userId}/{imovelId}")
 	public @ResponseBody String updateImovelUser(@PathVariable String  userId,
-											  @PathVariable String  imovelId,
-									  	      @RequestBody UpdateImovelUserDTO dto) {		
+											     @PathVariable String  imovelId,
+									  	         @RequestBody UpdateImovelUserDTO dto) {		
 		return service.updateImovelUser(userId, imovelId, dto);
+	}
+	
+	@ApiOperation(value = "Atualizar informações de quantidade de campos de um imovel da lista de imoveis do usuario")
+	@PostMapping("/updateQuantImovel/{userId}/{imovelId}")
+	public @ResponseBody String updateQuantImovel(@PathVariable String  userId,
+											      @PathVariable String  imovelId,
+									  	          @RequestBody UpdateQuantImovelUserDTO dto) {		
+		
+		return service.updateQuantImovel(userId, imovelId, dto);
 	}
 	
 	
