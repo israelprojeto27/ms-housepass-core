@@ -27,7 +27,7 @@ public class NotificationController {
 	private NotificationService service;
 	
 	@ApiOperation(value = "Cadastro de uma nova notificação")
-	@PostMapping
+	@PostMapping("/addNotification")
 	public @ResponseBody String create(@RequestBody CreateNotificationDTO dto){
 		return service.create(dto);		
 	}

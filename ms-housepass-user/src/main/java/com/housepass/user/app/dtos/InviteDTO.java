@@ -21,6 +21,7 @@ public class InviteDTO {
 	private StatusEnum statusInvite;
 	private LocalDateTime createdDate;
 	private LocalDateTime updatedDate;
+	private String userReceiveId;
 	
 	private UserResumeDTO userSendInvite;
 	
@@ -30,7 +31,8 @@ public class InviteDTO {
 						.message(invite.getMessage())
 						.createdDate(invite.getCreatedDate())
 						.updatedDate(invite.getUpdatedDate())
-						.statusInvite(invite.getStatusInvite())						
+						.statusInvite(invite.getStatusInvite())
+						.userReceiveId(invite.getUserReceiveInviteId())
 						.userSendInvite(UserResumeDTO.fromEntity(invite.getUserSendInvite()))
 						.build();
 	}

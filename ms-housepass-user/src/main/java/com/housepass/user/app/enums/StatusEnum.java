@@ -6,5 +6,6 @@ public enum StatusEnum {
 	ACCEPTED,
 	REJECTED,
 	BLOCKED,
-	READED
+	READED,
+	UNFOLLOW
 }

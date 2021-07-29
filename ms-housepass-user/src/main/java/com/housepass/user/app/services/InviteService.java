@@ -103,22 +103,24 @@ public class InviteService {
 			connectionUserRepository.insert(user1); 
 			
 			if ( userSendInvite.getConnections() != null ) {
-				userSendInvite.getConnections().add(user1);
+				userSendInvite.getConnections().add(user1);				
 			}
 			else {
 				userSendInvite.setConnections(Arrays.asList(user1));
 			}						
+			userSendInvite.setQuantConnections(userSendInvite.getQuantConnections() + 1);
 			
 			User userRceiveInvite = userRepository.findById(invite.getUserReceiveInviteId()).orElseThrow(() -> new DataNotFoundException("Usuário não encontrado"));
 			ConnectionUser user2 =  ConnectionUser.fromEntity(userResumeSendInvite);
 			connectionUserRepository.insert(user2); 
 			
 			if ( userRceiveInvite.getConnections() != null ) {
-				userRceiveInvite.getConnections().add(user2);
+				userRceiveInvite.getConnections().add(user2);			
 			}
 			else {
 				userRceiveInvite.setConnections(Arrays.asList(user2));				
 			}
+			userRceiveInvite.setQuantConnections(userRceiveInvite.getQuantConnections() + 1);
 			
 			userRepository.save(userSendInvite);
 			userRepository.save(userRceiveInvite);
@@ -140,6 +142,30 @@ public class InviteService {
 			userRceiveInvite.getInvites().remove(invite);
 			userRepository.save(userRceiveInvite);
 			
+			repository.delete(invite);
+		}
+		else if (dto.getStatusInvite().equals(StatusEnum.UNFOLLOW)) {
+			User userReceiveInvite = userRepository.findById(invite.getUserReceiveInviteId()).orElseThrow(() -> new DataNotFoundException("Usuário que recebeu convite não foi encontrado"));
+			User userSendInvite = userRepository.findById(invite.getUserSendInvite().getUserId()).orElseThrow(() -> new DataNotFoundException("Usuário que enviou convite não foi encontrado"));
+			
+			
+			Optional<ConnectionUser> connectionUserReceiveInvite = userReceiveInvite.getConnections().stream()
+																									  .filter(c -> c.getUserConnection().getUserId().equals(userSendInvite.getId()))																									  
+																									  .findFirst();
+			userReceiveInvite.getConnections().remove(connectionUserReceiveInvite.get());			
+			userReceiveInvite.getInvites().remove(invite);
+			userReceiveInvite.setQuantConnections(userReceiveInvite.getQuantConnections() - 1);
+			
+			Optional<ConnectionUser> connectionUserSendInvite = userSendInvite.getConnections().stream()
+																									  .filter(c -> c.getUserConnection().getUserId().equals(userReceiveInvite.getId()))																									  
+																									  .findFirst();
+			userSendInvite.getConnections().remove(connectionUserSendInvite.get());
+			userSendInvite.setQuantConnections(userSendInvite.getQuantConnections() - 1);
+			
+			connectionUserRepository.delete(connectionUserReceiveInvite.get());
+			connectionUserRepository.delete(connectionUserSendInvite.get());
+			userRepository.save(userReceiveInvite);
+			userRepository.save(userSendInvite);
 			repository.delete(invite);
 		}
 		

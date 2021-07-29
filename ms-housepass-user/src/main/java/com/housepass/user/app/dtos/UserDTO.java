@@ -38,6 +38,7 @@ public class UserDTO {
 	private List<EvaluationDTO> evaluations;
 	private List<ConquerDTO> conquers;
 	private List<InviteDTO> invites;
+	private List<ImovelUserDTO> imoveis;
 	
 	private ConfigurationDTO configuration;
 	
@@ -64,6 +65,7 @@ public class UserDTO {
 				.evaluations(user.getEvaluations() != null && !user.getEvaluations().isEmpty() ? user.getEvaluations().stream().map(EvaluationDTO::fromEntity).collect(Collectors.toList()) : null)
 				.conquers(user.getConquers() != null && !user.getConquers().isEmpty() ? user.getConquers().stream().map(ConquerDTO::fromEntity).collect(Collectors.toList()) : null)				
 				.invites(user.getInvites() != null && !user.getInvites().isEmpty() ? user.getInvites().stream().map(InviteDTO::fromEntity).collect(Collectors.toList()) : null)
+				.imoveis(user.getImoveis() != null && !user.getImoveis().isEmpty() ? user.getImoveis().stream().map(ImovelUserDTO::fromEntity).collect(Collectors.toList()) : null)
 				.build();
 	}
 	

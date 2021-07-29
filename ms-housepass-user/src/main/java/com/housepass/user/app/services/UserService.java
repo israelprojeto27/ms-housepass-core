@@ -26,7 +26,7 @@ import com.housepass.user.app.entities.User;
 import com.housepass.user.app.entities.UserResume;
 import com.housepass.user.app.exceptions.DataNotFoundException;
 import com.housepass.user.app.feignClient.ImovelClient;
-import com.housepass.user.app.feignClient.NotificationUserResumeClient;
+import com.housepass.user.app.feignClient.NotificationClient;
 import com.housepass.user.app.repositories.ImovelRepository;
 import com.housepass.user.app.repositories.UserRepository;
 import com.housepass.user.app.repositories.UserResumeRepository;
@@ -47,7 +47,9 @@ public class UserService {
 	private ImovelClient imovelClient;
 	
 	@Autowired
-	private NotificationUserResumeClient notificationClient;
+	private NotificationClient notificationClient;
+	
+	
 	
 	
 	@Autowired
@@ -146,6 +148,7 @@ public class UserService {
 		imovelRepository.insert(imovel);
 		if ( user.getImoveis() != null ) {
 			user.getImoveis().add(imovel);
+			user.setQuantImoveis(user.getQuantImoveis() + 1);
 		}
 		else {
 			user.setImoveis(Arrays.asList(imovel));
