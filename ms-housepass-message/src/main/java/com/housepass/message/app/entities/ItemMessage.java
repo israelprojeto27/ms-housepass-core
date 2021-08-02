@@ -6,6 +6,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.housepass.message.app.dtos.CreateFirstMessageDTO;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,5 +28,14 @@ public class ItemMessage {
 	private LocalDateTime createdDate;
 	
 	@DBRef
-	private UserResume userRsumeSend;
+	private UserResume userResumeSend;
+
+	public static ItemMessage toEntity(Message message) {		
+		
+		return ItemMessage.builder()
+				.messageId(message.getId())
+				.detailMessage(message.getLastMessage())
+				.createdDate(message.getUpdatedDate())
+				.build();
+	}
 }

@@ -22,6 +22,7 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/valorImovel")
 public class ValorImovelController {
 	
+	
 	@Autowired
 	private ValorImovelService service;
 	

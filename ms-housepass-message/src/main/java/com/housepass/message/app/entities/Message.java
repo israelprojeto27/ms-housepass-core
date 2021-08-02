@@ -1,9 +1,11 @@
 package com.housepass.message.app.entities;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.AllArgsConstructor;
@@ -23,8 +25,13 @@ public class Message {
 	
 	private LocalDateTime createdDate;
 	private LocalDateTime updatedDate;
+	private String lastMessage;
 	
-	private List<ItemMessage> itemMessages;
+	@DBRef(lazy = true)
+	private UserResume userResumeLastMessage; // usuario que enviou a ultima mensagem
+		
+	@DBRef(lazy = true)
+	private List<ItemMessage> itemMessages = new ArrayList<ItemMessage>();
 	
 	
 

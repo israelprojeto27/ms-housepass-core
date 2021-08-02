@@ -28,8 +28,8 @@ public class MessageController {
 	
 	@ApiOperation(value = "Cria primeira vez uma canal de message entre 2 usuarios")
 	@PostMapping
-	public ResponseEntity<?> create(@RequestBody CreateFirstMessageDTO dto) {
-		return service.create(dto);
+	public ResponseEntity<?> createFirstMessage(@RequestBody CreateFirstMessageDTO dto) {
+		return service.createFirstMessage(dto);
 	}
 	
 	

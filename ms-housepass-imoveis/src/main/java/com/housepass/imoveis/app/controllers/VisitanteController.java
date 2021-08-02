@@ -1,7 +1,5 @@
 package com.housepass.imoveis.app.controllers;
 
-import javax.ws.rs.QueryParam;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,8 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-
-import com.housepass.imoveis.app.dtos.CreateComentarioDTO;
 import com.housepass.imoveis.app.dtos.CreateVisitanteDTO;
 import com.housepass.imoveis.app.services.VisitanteService;
 
