@@ -1,7 +1,9 @@
 package com.housepass.message.app.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,6 +46,12 @@ public class UserResumeController {
 	@DeleteMapping("/deleteUserResume/{userId}")
 	public @ResponseBody String deleteUserResume(@PathVariable String userId) {
 		return service.deleteUserResume(userId);
+	}
+	
+	@ApiOperation(value = "Listar todos os User resume criados")
+	@GetMapping
+	public ResponseEntity<?> findAll() {
+		 return service.findAll();
 	}
 
 }

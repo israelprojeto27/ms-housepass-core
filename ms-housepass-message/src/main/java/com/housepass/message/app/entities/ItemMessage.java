@@ -30,12 +30,13 @@ public class ItemMessage {
 	@DBRef
 	private UserResume userResumeSend;
 
-	public static ItemMessage toEntity(Message message) {		
+	public static ItemMessage toEntity(Message message, UserResume userResumeSend) {		
 		
 		return ItemMessage.builder()
 				.messageId(message.getId())
 				.detailMessage(message.getLastMessage())
 				.createdDate(message.getUpdatedDate())
+				.userResumeSend(userResumeSend)
 				.build();
 	}
 }

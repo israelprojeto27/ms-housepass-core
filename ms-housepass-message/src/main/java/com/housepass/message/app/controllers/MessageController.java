@@ -75,9 +75,9 @@ public class MessageController {
 	
 	
 	@ApiOperation(value = "Filtrar todas itens mensagens cadastradas por message Id")
-	@PostMapping("/findByFilterAllMessagesByMessageId/{messageId}")
-	public ResponseEntity<?> findByFilterAllMessagesByMessageId(@PathVariable String  messageId, @RequestParam(value = "page") int page, @RequestParam(value = "size") int size) {
-		return service.findByFilterAllMessagesByMessageId(messageId, page, size);
+	@PostMapping("/findByFilterAllItemsMessagesByMessageId/{messageId}")
+	public ResponseEntity<?> findByFilterAllItemsMessagesByMessageId(@PathVariable String  messageId, @RequestParam(value = "page") int page, @RequestParam(value = "size") int size) {
+		return service.findByFilterAllItemsMessagesByMessageId(messageId, page, size);
 	}
 		
 	

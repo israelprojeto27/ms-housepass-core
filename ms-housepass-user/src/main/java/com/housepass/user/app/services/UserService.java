@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.housepass.user.app.dtos.ChangePasswordUserDTO;
 import com.housepass.user.app.dtos.CreateUserDTO;
+import com.housepass.user.app.dtos.CreateUserMessageDTO;
 import com.housepass.user.app.dtos.CreateUserResumeImovellDTO;
 import com.housepass.user.app.dtos.CreateUserResumeNotificationlDTO;
 import com.housepass.user.app.dtos.ImovelUserDTO;
@@ -28,6 +29,7 @@ import com.housepass.user.app.entities.UserResume;
 import com.housepass.user.app.enums.TypeQuantImovel;
 import com.housepass.user.app.exceptions.DataNotFoundException;
 import com.housepass.user.app.feignClient.ImovelClient;
+import com.housepass.user.app.feignClient.MessageClient;
 import com.housepass.user.app.feignClient.NotificationClient;
 import com.housepass.user.app.repositories.ImovelRepository;
 import com.housepass.user.app.repositories.UserRepository;
@@ -51,7 +53,8 @@ public class UserService {
 	@Autowired
 	private NotificationClient notificationClient;
 	
-	
+	@Autowired
+	private MessageClient messageClient;
 	
 	
 	@Autowired
@@ -83,6 +86,9 @@ public class UserService {
 		}
 		
 		configurationService.create(user.getId());
+		
+		CreateUserMessageDTO createUserMessageDTO = CreateUserMessageDTO.fromEntity(userResume);
+		messageClient.addUserResume(createUserMessageDTO);
 		
 		return new ResponseEntity<>("Usuário criado com sucesso", HttpStatus.CREATED);
 	}
