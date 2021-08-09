@@ -9,5 +9,6 @@ import com.housepass.imoveis.app.entities.UserResume;
 public interface UserResumeRepository extends MongoRepository<UserResume, String>{
 
 	UserResume findByUserId(String userId);
+	
 
 }

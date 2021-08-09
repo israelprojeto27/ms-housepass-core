@@ -10,16 +10,22 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.housepass.imoveis.app.dtos.ActionLikeUnLikeDTO;
 import com.housepass.imoveis.app.dtos.CreateImovelDTO;
 import com.housepass.imoveis.app.dtos.ImovelDTO;
 import com.housepass.imoveis.app.dtos.ImovelUserDTO;
 import com.housepass.imoveis.app.dtos.UpdateImovelDTO;
 import com.housepass.imoveis.app.dtos.UserOwnerDTO;
 import com.housepass.imoveis.app.entities.Imovel;
+import com.housepass.imoveis.app.entities.LikeImovel;
 import com.housepass.imoveis.app.entities.User;
+import com.housepass.imoveis.app.entities.UserResume;
+import com.housepass.imoveis.app.enums.TypeActionLike;
 import com.housepass.imoveis.app.exceptions.DataNotFoundException;
 import com.housepass.imoveis.app.feignclients.UserClient;
 import com.housepass.imoveis.app.repositories.ImovelRepository;
+import com.housepass.imoveis.app.repositories.LikeImovelRepository;
+import com.housepass.imoveis.app.repositories.UserResumeRepository;
 
 
 @Service
@@ -30,6 +36,12 @@ public class ImovelService {
 	 
 	@Autowired
 	UserClient userClient;
+	
+	@Autowired
+	UserResumeRepository userResumeRepository;
+	
+	@Autowired
+	LikeImovelRepository likeImovelRepository;
 	
 	@Transactional
 	public ResponseEntity<?> create(CreateImovelDTO dto) {
@@ -88,6 +100,31 @@ public class ImovelService {
 														.map(ImovelDTO::fromEntity)
 														.collect(Collectors.toList()), 
 										HttpStatus.OK);
+	}
+	
+	@Transactional
+	public ResponseEntity<?> actionLikeUnlikeImovelId(String imovelId, ActionLikeUnLikeDTO dto) {
+		Imovel imovel = repository.findById(imovelId).orElseThrow(() -> new DataNotFoundException("Imovel não encontrado"));
+		UserResume userResume = userResumeRepository.findByUserId(dto.getUserId());	
+		
+		
+		if ( dto.getAction().equals(TypeActionLike.LIKE)) {
+			LikeImovel likeImovel = new LikeImovel(dto.getUserId(), imovel.getId(), userResume);	
+			likeImovelRepository.insert(likeImovel);
+			
+			imovel.getLikesImovel().add(likeImovel);
+			imovel.setQuantLikes(imovel.getQuantLikes() + 1);
+		}
+		else if ( dto.getAction().equals(TypeActionLike.UNLIKE)) {
+			LikeImovel likeImovel = likeImovelRepository.findByUserIdAndImovelId(dto.getUserId(), imovel.getId());			
+			imovel.getLikesImovel().remove(likeImovel);
+			imovel.setQuantLikes(imovel.getQuantLikes() - 1);
+			likeImovelRepository.delete(likeImovel);
+		}
+		repository.save(imovel);
+		
+		
+		return new ResponseEntity<>("Action " + dto + " adicionado com sucesso ao imovel", HttpStatus.OK);
 	}
 
 

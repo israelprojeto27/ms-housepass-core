@@ -70,7 +70,8 @@ public class Imovel {
 	@DBRef(lazy = true)
 	private List<Visitante> visitantes  = new ArrayList<Visitante>();
 	
-
+	@DBRef(lazy = true)
+	private List<LikeImovel> likesImovel  = new ArrayList<LikeImovel>();
 	
 	
 }

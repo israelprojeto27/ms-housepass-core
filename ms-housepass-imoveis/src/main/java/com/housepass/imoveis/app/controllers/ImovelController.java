@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.housepass.imoveis.app.dtos.ActionLikeUnLikeDTO;
 import com.housepass.imoveis.app.dtos.CreateImovelDTO;
 import com.housepass.imoveis.app.dtos.UpdateImovelDTO;
 import com.housepass.imoveis.app.services.ImovelService;
@@ -61,6 +62,12 @@ public class ImovelController {
 		return service.findById(imovelId);
 	}
 
+	
+	@ApiOperation(value = "Adiciona like ou unlike para um imovel")
+	@PostMapping("/{imovelId}")
+	public ResponseEntity<?> actionLikeUnlikeImovelId(@PathVariable String imovelId, @RequestBody ActionLikeUnLikeDTO dto) {
+		return service.actionLikeUnlikeImovelId(imovelId, dto);
+	}
 	
 
 }

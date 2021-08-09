@@ -43,6 +43,7 @@ public class ImovelDTO {
 	private List<AvaliacaoDTO> avaliacoes;	
 	private List<RecomendacaoDTO> recomendacoes;
 	private List<VisitanteDTO> visitantes;
+	private List<LikeImovelDTO> likes;
 	
 	private long quantLikes;
 	private long quantViews;
@@ -75,13 +76,18 @@ public class ImovelDTO {
 				.quantQuarto(imovel.getQuantQuarto())
 				.quantGaragem(imovel.getQuantGaragem())
 				.quantSuite(imovel.getQuantSuite())
-				.mobiliado(imovel.getMobiliado())				
+				.mobiliado(imovel.getMobiliado())					
+				.quantLikes(imovel.getQuantLikes())
+				.quantViews(imovel.getQuantViews())		
+				.quantShares(imovel.getQuantShares())
+				.quantComments(imovel.getQuantComments())				
 				.ofertas(imovel.getOfertas() != null && !imovel.getOfertas().isEmpty() ? imovel.getOfertas().stream().map(OfertaDTO::fromEntity).collect(Collectors.toList()) : null)
 				.comentarios(imovel.getComentarios() != null && imovel.getComentarios().isEmpty() ? imovel.getComentarios().stream().map(ComentarioDTO::fromEntity).collect(Collectors.toList()) : null)
 				.valoresImovel(imovel.getValoresImovel() != null && !imovel.getValoresImovel().isEmpty() ? imovel.getValoresImovel().stream().map(ValorImovelDTO::fromEntity).collect(Collectors.toList()) : null)
 				.avaliacoes(imovel.getAvaliacoes() != null && !imovel.getAvaliacoes().isEmpty() ? imovel.getAvaliacoes().stream().map(AvaliacaoDTO::fromEntity).collect(Collectors.toList()) : null)
 				.recomendacoes(imovel.getRecomendacoes() != null && !imovel.getRecomendacoes().isEmpty() ? imovel.getRecomendacoes().stream().map(RecomendacaoDTO::fromEntity).collect(Collectors.toList()) : null)				
 				.visitantes(imovel.getVisitantes() != null && !imovel.getVisitantes().isEmpty() ? imovel.getVisitantes().stream().map(VisitanteDTO::fromEntity).collect(Collectors.toList()) : null)
+				.likes(imovel.getLikesImovel() != null && !imovel.getLikesImovel().isEmpty() ? imovel.getLikesImovel().stream().map(LikeImovelDTO::fromEntity).collect(Collectors.toList()) : null)
 				.build();
 	}
 
