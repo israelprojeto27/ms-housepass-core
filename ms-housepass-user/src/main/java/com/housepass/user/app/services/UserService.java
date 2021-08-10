@@ -2,6 +2,7 @@ package com.housepass.user.app.services;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,7 @@ import com.housepass.user.app.feignClient.NotificationClient;
 import com.housepass.user.app.repositories.ImovelRepository;
 import com.housepass.user.app.repositories.UserRepository;
 import com.housepass.user.app.repositories.UserResumeRepository;
+import com.housepass.user.app.utils.FormatUtils;
 
 @Service
 public class UserService {
@@ -42,7 +44,7 @@ public class UserService {
 	private UserRepository repository;
 	
 	@Autowired
-	private UserResumeRepository userRepository;
+	private UserResumeRepository userResumeRepository;
 	
 	@Autowired
 	private ImovelRepository imovelRepository;
@@ -66,7 +68,7 @@ public class UserService {
 		repository.insert(user);
 		
 		UserResume userResume = UserResume.fromEntity(user);
-		userRepository.insert(userResume);
+		userResumeRepository.insert(userResume);
 		
 		CreateUserResumeImovellDTO userResumeImovelDTO = CreateUserResumeImovellDTO.fromEntity(userResume);
 		imovelClient.addUserResume(userResumeImovelDTO);
@@ -266,6 +268,35 @@ public class UserService {
 		
 		imovelRepository.save(imovel);
 		return "ok";
+	}
+
+	public ResponseEntity<?> searchUsers(String value, String type, int page, int size) {
+		
+		if ( value != null && ! value.isEmpty()) {
+			if (FormatUtils.isValidEmail(value)) {
+				User user = repository.findByEmail(value);
+				return new ResponseEntity<>(Arrays.asList(user).stream()
+															.map(UserDTO::fromEntity)
+															.collect(Collectors.toList()), 
+											HttpStatus.OK);
+			}
+			else {
+				if (type != null) {					
+					return new ResponseEntity<>(repository.findByTypeUserAndNameContainingIgnoreCase(type, value).stream()
+																												 .map(UserDTO::fromEntity)
+																												 .collect(Collectors.toList()), 
+																								HttpStatus.OK);
+				}
+				else {					
+					return new ResponseEntity<>(repository.findByNameContainingIgnoreCase(type, value).stream()
+																									  .map(UserDTO::fromEntity)
+																									  .collect(Collectors.toList()), 
+																						HttpStatus.OK);
+				}
+			}
+		}
+		
+		return null;
 	}
 
 }

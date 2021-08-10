@@ -33,6 +33,16 @@ public class UserController {
 	@Autowired
 	private UserService service;
  
+	@ApiOperation(value = "Buscar usuarios por diversos parametros")
+	@PostMapping("/search")
+	public ResponseEntity<?> search(@RequestParam(value = "page") int page, 
+									@RequestParam(value = "size") int size,
+									@RequestParam(value = "value", required = false) String value,
+									@RequestParam(value = "type", required = false) String type) {
+		
+		return service.searchUsers(value, type, page, size);
+	}
+	
 	
 	@ApiOperation(value = "Criação de novo usuário")
 	@PostMapping

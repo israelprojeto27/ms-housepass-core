@@ -4,12 +4,28 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class FormatUtils {			
 	
 	private static final String FORMAT_DATA = "yyyy-MM-dd";
 	
 	private static final String FORMAT_HORA = "HH:mm";
+	
+	
+	public static boolean isValidEmail(String email) {
+	    boolean isEmailIdValid = false;
+	    if (email != null && email.length() > 0) {
+	        String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
+	        Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
+	        Matcher matcher = pattern.matcher(email);
+	        if (matcher.matches()) {
+	            isEmailIdValid = true;
+	        }
+	    }
+	    return isEmailIdValid;
+	}
 	
 	
 	public static LocalDate converteStringToLocalDateTime(String data) {
