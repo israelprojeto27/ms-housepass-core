@@ -33,6 +33,7 @@ import com.housepass.user.app.feignClient.ImovelClient;
 import com.housepass.user.app.feignClient.MessageClient;
 import com.housepass.user.app.feignClient.NotificationClient;
 import com.housepass.user.app.repositories.ImovelRepository;
+import com.housepass.user.app.repositories.UserCustomRepository;
 import com.housepass.user.app.repositories.UserRepository;
 import com.housepass.user.app.repositories.UserResumeRepository;
 import com.housepass.user.app.utils.FormatUtils;
@@ -61,6 +62,9 @@ public class UserService {
 	
 	@Autowired
 	private ConfigurationService configurationService;
+	
+	@Autowired
+	private UserCustomRepository userCustomRepository;
 
 	@Transactional
 	public ResponseEntity<?> create(CreateUserDTO dto) {	
@@ -281,22 +285,34 @@ public class UserService {
 											HttpStatus.OK);
 			}
 			else {
-				if (type != null) {					
-					return new ResponseEntity<>(repository.findByTypeUserAndNameContainingIgnoreCase(type, value).stream()
-																												 .map(UserDTO::fromEntity)
-																												 .collect(Collectors.toList()), 
-																								HttpStatus.OK);
-				}
-				else {					
-					return new ResponseEntity<>(repository.findByNameContainingIgnoreCase(type, value).stream()
-																									  .map(UserDTO::fromEntity)
-																									  .collect(Collectors.toList()), 
-																						HttpStatus.OK);
-				}
+				List<User> users = userCustomRepository.findUsersCustom(value, type, page, size);
+				return new ResponseEntity<>(users.stream()
+												 .map(UserDTO::fromEntity)
+												 .collect(Collectors.toList()), 
+											HttpStatus.OK);
 			}
 		}
 		
 		return null;
 	}
+	
+	/*
+	 else {
+				PageRequest pageable = PageRequest.of(page, size,  Sort.by("updatedDate").descending());
+				if (type != null) {					
+					return new ResponseEntity<>(repository.findByTypeUserAndNameContainingIgnoreCase(type, value, pageable).stream()
+																												 .map(UserDTO::fromEntity)
+																												 .collect(Collectors.toList()), 
+																								HttpStatus.OK);
+				}
+				else {					
+					return new ResponseEntity<>(repository.findByNameContainingIgnoreCase(value, pageable).stream()
+																									  .map(UserDTO::fromEntity)
+																									  .collect(Collectors.toList()), 
+																						HttpStatus.OK);
+				}
+			}
+	 */
+	 
 
 }

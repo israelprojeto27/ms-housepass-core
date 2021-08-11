@@ -28,6 +28,27 @@ public class ImovelController {
 	@Autowired
 	private ImovelService service;
  
+	
+	@ApiOperation(value = "Buscar imoveis por diversos parametros")
+	@GetMapping("/search")
+	public ResponseEntity<?> search(@RequestParam(value = "page") int page, 
+								    @RequestParam(value = "size") int size,						
+								    @RequestParam(value = "action", required = true) String action,
+								    @RequestParam(value = "type", required = false) String type,
+								    @RequestParam(value = "priceMin", required = false) String priceMin,		
+								    @RequestParam(value = "priceMax", required = false) String priceMax,		
+								    @RequestParam(value = "quantQuartos", required = false) String quantQuartos,
+								    @RequestParam(value = "quantBanheiros", required = false) String quantBanheiros,
+								    @RequestParam(value = "quantGaragem", required = false) String quantGaragem,
+								    @RequestParam(value = "quantSuite", required = false) String quantSuite,
+								    @RequestParam(value = "areaMin", required = false) String areaMin,
+								    @RequestParam(value = "areaMax", required = false) String areaMax) {
+		
+		return service.searchImoveisCustom(action, type, priceMin, priceMax,
+				 quantQuartos, quantBanheiros, quantGaragem, quantSuite, areaMin, areaMax,
+				 page, size);
+	}
+ 
 	@ApiOperation(value = "Cadastro de um novo imóvel")
 	@PostMapping("")
 	public ResponseEntity<?> create(@RequestBody CreateImovelDTO dto){

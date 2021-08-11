@@ -2,6 +2,7 @@ package com.housepass.user.app.repositories;
 
 import java.util.List;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
@@ -14,8 +15,8 @@ public interface UserRepository extends MongoRepository<User, String>{
 
 	User findByEmail(String email);
 
-	List<User> findByTypeUserAndNameContainingIgnoreCase(String type, String name);
+	List<User> findByTypeUserAndNameContainingIgnoreCase(String type, String name, PageRequest pageable);
 
-	List<User> findByNameContainingIgnoreCase(String type, String value);
+	List<User> findByNameContainingIgnoreCase(String value, PageRequest pageable);
 
 }

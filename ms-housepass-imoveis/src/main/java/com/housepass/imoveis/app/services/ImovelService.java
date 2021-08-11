@@ -1,10 +1,13 @@
 package com.housepass.imoveis.app.services;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -23,9 +26,11 @@ import com.housepass.imoveis.app.entities.UserResume;
 import com.housepass.imoveis.app.enums.TypeActionLike;
 import com.housepass.imoveis.app.exceptions.DataNotFoundException;
 import com.housepass.imoveis.app.feignclients.UserClient;
+import com.housepass.imoveis.app.repositories.ImovelCustomRepository;
 import com.housepass.imoveis.app.repositories.ImovelRepository;
 import com.housepass.imoveis.app.repositories.LikeImovelRepository;
 import com.housepass.imoveis.app.repositories.UserResumeRepository;
+
 
 
 @Service
@@ -42,6 +47,10 @@ public class ImovelService {
 	
 	@Autowired
 	LikeImovelRepository likeImovelRepository;
+
+	@Autowired
+	ImovelCustomRepository imovelCustomRepository;
+
 	
 	@Transactional
 	public ResponseEntity<?> create(CreateImovelDTO dto) {
@@ -125,7 +134,23 @@ public class ImovelService {
 		
 		
 		return new ResponseEntity<>("Action " + dto + " adicionado com sucesso ao imovel", HttpStatus.OK);
+	}	
+	
+	public ResponseEntity<?> searchImoveisCustom(String action, String type, String priceMin, String priceMax,  
+											     String quantQuartos,	String  quantBanheiros, String quantGaragem,
+											     String quantSuite, String areaMin, String areaMax,
+											     int page, int size) {
+		
+	List<Imovel> imoveis = imovelCustomRepository.findAllCustom( action, type, priceMin, priceMax,
+																 quantQuartos, quantBanheiros, quantGaragem, quantSuite, areaMin, areaMax, 
+																 page, size);
+		return new ResponseEntity<>(imoveis.stream()
+											.map(ImovelDTO::fromEntity)
+											.collect(Collectors.toList()), 
+		HttpStatus.OK);
+		
 	}
-
+	
+	
 
 }

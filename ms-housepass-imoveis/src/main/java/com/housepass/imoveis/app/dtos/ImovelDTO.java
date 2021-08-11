@@ -23,7 +23,8 @@ import lombok.NoArgsConstructor;
 public class ImovelDTO {
 	
 	private String id;
-		
+	
+	private double valor;
 	private String titulo;
 	private String localizacao;
 	private TipoImovelEnum tipoImovel; 
@@ -60,7 +61,8 @@ public class ImovelDTO {
 	
 	public static ImovelDTO fromEntity(Imovel imovel) {
 		return ImovelDTO.builder()
-				.id(imovel.getId())			
+				.id(imovel.getId())		
+				.valor(imovel.getValor())
 				.titulo(imovel.getTitulo())
 				.tipoImovel(imovel.getTipoImovel())
 				.acaoImovel(imovel.getAcaoImovel())
